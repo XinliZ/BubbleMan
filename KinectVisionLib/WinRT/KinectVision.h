@@ -6,16 +6,16 @@
 
 namespace KinectVisionLib
 {
-	public ref class KinectVision sealed
-	{
-	public:
-		KinectVision();
+    public ref class KinectVision sealed
+    {
+    public:
+        KinectVision();
 
-		void Initialize();
+        void Initialize();
 
-		Windows::Foundation::IAsyncOperation<ProcessStats^>^ ProcessFrame(Frame^ frame);
+        Windows::Foundation::IAsyncOperation<ProcessStats^>^ ProcessFrame(Frame^ frame);
 
-	private:
-		KinectVisionLib::Core::KinectVisionManager manager;
-	};
+    private:
+        KinectVisionLib::Core::KinectVisionManager manager;
+    };
 }

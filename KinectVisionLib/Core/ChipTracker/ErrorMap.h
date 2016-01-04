@@ -4,11 +4,11 @@
 
 namespace KinectVisionLib
 {
-	namespace Core
-	{
-		class ErrorMap : public Image<int>
-		{
+    namespace Core
+    {
+        class ErrorMap : public Image<int>
+        {
 
-		};
-	}
+        };
+    }
 }

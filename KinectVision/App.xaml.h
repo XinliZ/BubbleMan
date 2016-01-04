@@ -10,18 +10,18 @@
 
 namespace KinectVision
 {
-		/// <summary>
-	/// Provides application-specific behavior to supplement the default Application class.
-	/// </summary>
-	ref class App sealed
-	{
-	public:
-		App();
-		virtual void OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEventArgs^ e) override;
+        /// <summary>
+    /// Provides application-specific behavior to supplement the default Application class.
+    /// </summary>
+    ref class App sealed
+    {
+    public:
+        App();
+        virtual void OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEventArgs^ e) override;
 
-	private:
-		void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ e);
-		void OnResuming(Platform::Object ^sender, Platform::Object ^args);
-		DirectXPage^ m_directXPage;
-	};
+    private:
+        void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ e);
+        void OnResuming(Platform::Object ^sender, Platform::Object ^args);
+        DirectXPage^ m_directXPage;
+    };
 }

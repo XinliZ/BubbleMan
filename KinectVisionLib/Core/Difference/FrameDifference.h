@@ -5,7 +5,7 @@
 class FrameDifference
 {
 public:
-	FrameDifference();
-	~FrameDifference();
+    FrameDifference();
+    ~FrameDifference();
 };
 

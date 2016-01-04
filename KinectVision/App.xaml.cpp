@@ -28,9 +28,9 @@ using namespace Windows::UI::Xaml::Navigation;
 /// </summary>
 App::App()
 {
-	InitializeComponent();
-	Suspending += ref new SuspendingEventHandler(this, &App::OnSuspending);
-	Resuming += ref new EventHandler<Object^>(this, &App::OnResuming);
+    InitializeComponent();
+    Suspending += ref new SuspendingEventHandler(this, &App::OnSuspending);
+    Resuming += ref new EventHandler<Object^>(this, &App::OnResuming);
 }
 
 /// <summary>
@@ -42,25 +42,25 @@ App::App()
 void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEventArgs^ e)
 {
 #if _DEBUG
-	if (IsDebuggerPresent())
-	{
-		DebugSettings->EnableFrameRateCounter = true;
-	}
+    if (IsDebuggerPresent())
+    {
+        DebugSettings->EnableFrameRateCounter = true;
+    }
 #endif
 
-	if (m_directXPage == nullptr)
-	{
-		m_directXPage = ref new DirectXPage();
-	}
+    if (m_directXPage == nullptr)
+    {
+        m_directXPage = ref new DirectXPage();
+    }
 
-	if (e->PreviousExecutionState == ApplicationExecutionState::Terminated)
-	{
-		m_directXPage->LoadInternalState(ApplicationData::Current->LocalSettings->Values);
-	}
+    if (e->PreviousExecutionState == ApplicationExecutionState::Terminated)
+    {
+        m_directXPage->LoadInternalState(ApplicationData::Current->LocalSettings->Values);
+    }
 
-	// Place the page in the current window and ensure that it is active.
-	Window::Current->Content = m_directXPage;
-	Window::Current->Activate();
+    // Place the page in the current window and ensure that it is active.
+    Window::Current->Content = m_directXPage;
+    Window::Current->Activate();
 }
 
 /// <summary>
@@ -72,10 +72,10 @@ void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEvent
 /// <param name="e">Details about the suspend request.</param>
 void App::OnSuspending(Object^ sender, SuspendingEventArgs^ e)
 {
-	(void) sender;	// Unused parameter
-	(void) e;	// Unused parameter
+    (void) sender;    // Unused parameter
+    (void) e;    // Unused parameter
 
-	m_directXPage->SaveInternalState(ApplicationData::Current->LocalSettings->Values);
+    m_directXPage->SaveInternalState(ApplicationData::Current->LocalSettings->Values);
 }
 
 /// <summary>
@@ -85,8 +85,8 @@ void App::OnSuspending(Object^ sender, SuspendingEventArgs^ e)
 /// <param name="args">Details about the resume request.</param>
 void App::OnResuming(Object ^sender, Object ^args)
 {
-	(void) sender; // Unused parameter
-	(void) args; // Unused parameter
+    (void) sender; // Unused parameter
+    (void) args; // Unused parameter
 
-	m_directXPage->LoadInternalState(ApplicationData::Current->LocalSettings->Values);
+    m_directXPage->LoadInternalState(ApplicationData::Current->LocalSettings->Values);
 }

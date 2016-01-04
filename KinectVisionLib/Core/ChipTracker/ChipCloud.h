@@ -4,12 +4,12 @@
 
 namespace KinectVisionLib
 {
-	namespace Core
-	{
-		class ChipCloud
-		{
-		private:
-			std::vector<Chip> chips;
-		};
-	}
+    namespace Core
+    {
+        class ChipCloud
+        {
+        private:
+            std::vector<Chip> chips;
+        };
+    }
 }

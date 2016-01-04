@@ -4,15 +4,15 @@
 
 namespace KinectVisionLib
 {
-	public ref class ProcessStats sealed
-	{
-	public:
-		ProcessStats(Frame^ debugFrame);
+    public ref class ProcessStats sealed
+    {
+    public:
+        ProcessStats(Frame^ debugFrame);
 
-		Frame^ GetDebugFrame();
+        Frame^ GetDebugFrame();
 
-	private:
-		int processTime;
-		Frame^ debugFrame;
-	};
+    private:
+        int processTime;
+        Frame^ debugFrame;
+    };
 }

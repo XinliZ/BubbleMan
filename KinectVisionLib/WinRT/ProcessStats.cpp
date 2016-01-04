@@ -5,10 +5,10 @@ using namespace KinectVisionLib;
 
 ProcessStats::ProcessStats(Frame^ debugFrame)
 {
-	this->debugFrame = debugFrame;
+    this->debugFrame = debugFrame;
 }
 
 Frame^ ProcessStats::GetDebugFrame()
 {
-	return this->debugFrame;
+    return this->debugFrame;
 }
