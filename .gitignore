@@ -1,0 +1,10 @@
+/*
+
+# Allowed source folders
+!/KinectVision
+/KinectVision/x64
+/KinectVision/Generated Files
+
+!/KinectVisionLib
+/KinectVisionLib/x64
+/KinectVisionLib/Generated Files
