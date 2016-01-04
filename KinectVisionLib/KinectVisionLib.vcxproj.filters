@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>7ef2d796-90c3-4334-a9ae-e888da65b2d0</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="WinRT">
+      <UniqueIdentifier>{9c597a79-ee4b-420d-9b0c-a8fa0d7acdf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{dc9e01dd-1545-4552-ab62-307beda61bb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\ChipTracker">
+      <UniqueIdentifier>{d04eb9b6-836a-444a-b744-dfadde371872}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Difference">
+      <UniqueIdentifier>{78f3cc94-c514-4f4e-8fdd-742b38ccb5d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Segmentation">
+      <UniqueIdentifier>{3a1d1615-e135-4426-9835-95523d711ef2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="WinRT\Frame.cpp">
+      <Filter>WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="WinRT\KinectVision.cpp">
+      <Filter>WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="WinRT\ProcessStats.cpp">
+      <Filter>WinRT</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\KinectVisionManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Difference\FrameDifference.cpp">
+      <Filter>Core\Difference</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Core\ChipTracker\Chip.h">
+      <Filter>Core\ChipTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ChipTracker\ChipTracker.h">
+      <Filter>Core\ChipTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ChipTracker\FrameMask.h">
+      <Filter>Core\ChipTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ChipTracker\MotionState.h">
+      <Filter>Core\ChipTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="WinRT\Frame.h">
+      <Filter>WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="WinRT\KinectVision.h">
+      <Filter>WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="WinRT\ProcessStats.h">
+      <Filter>WinRT</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Utils.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Size.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Rect.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Point.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\KinectVisionManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Image.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\DifferencialImage.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\DepthPixel.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\DepthImage.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\AreaMap.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Segmentation\ImageSegmentation.h">
+      <Filter>Core\Segmentation</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Difference\FrameDifference.h">
+      <Filter>Core\Difference</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Difference\BackgroundManager.h">
+      <Filter>Core\Difference</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ChipTracker\ChipCloud.h">
+      <Filter>Core\ChipTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ChipTracker\ChipManager.h">
+      <Filter>Core\ChipTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ChipTracker\DeltaMotionState.h">
+      <Filter>Core\ChipTracker</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ChipTracker\ErrorMap.h">
+      <Filter>Core\ChipTracker</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

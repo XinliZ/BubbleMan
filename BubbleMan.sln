@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KinectVision", "KinectVision\KinectVision.vcxproj", "{265EF7D8-931A-4746-9F90-DBB763B14A7F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3D486B64-91AE-415E-9215-4B44E386CF09} = {3D486B64-91AE-415E-9215-4B44E386CF09}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KinectVisionLib", "KinectVisionLib\KinectVisionLib.vcxproj", "{3D486B64-91AE-415E-9215-4B44E386CF09}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{CABEE083-523B-4C89-8B54-E69BBEED2037}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A418A91-F35B-48DF-AB5B-2831B15B2E38}"
+	ProjectSection(SolutionItems) = preProject
+		Performance1.psess = Performance1.psess
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|ARM = Release|ARM
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Debug|ARM.ActiveCfg = Debug|x64
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Debug|Win32.ActiveCfg = Debug|x64
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Debug|Win32.Build.0 = Debug|x64
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Debug|Win32.Deploy.0 = Debug|x64
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Debug|x64.ActiveCfg = Debug|x64
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Debug|x64.Build.0 = Debug|x64
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Debug|x64.Deploy.0 = Debug|x64
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Release|ARM.ActiveCfg = Release|x64
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Release|Win32.ActiveCfg = Release|x64
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Release|x64.ActiveCfg = Release|x64
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Release|x64.Build.0 = Release|x64
+		{265EF7D8-931A-4746-9F90-DBB763B14A7F}.Release|x64.Deploy.0 = Release|x64
+		{3D486B64-91AE-415E-9215-4B44E386CF09}.Debug|ARM.ActiveCfg = Debug|x64
+		{3D486B64-91AE-415E-9215-4B44E386CF09}.Debug|Win32.ActiveCfg = Debug|x64
+		{3D486B64-91AE-415E-9215-4B44E386CF09}.Debug|Win32.Build.0 = Debug|x64
+		{3D486B64-91AE-415E-9215-4B44E386CF09}.Debug|x64.ActiveCfg = Debug|x64
+		{3D486B64-91AE-415E-9215-4B44E386CF09}.Debug|x64.Build.0 = Debug|x64
+		{3D486B64-91AE-415E-9215-4B44E386CF09}.Release|ARM.ActiveCfg = Release|x64
+		{3D486B64-91AE-415E-9215-4B44E386CF09}.Release|Win32.ActiveCfg = Release|x64
+		{3D486B64-91AE-415E-9215-4B44E386CF09}.Release|x64.ActiveCfg = Release|x64
+		{3D486B64-91AE-415E-9215-4B44E386CF09}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

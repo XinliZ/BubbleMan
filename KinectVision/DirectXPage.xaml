@@ -1,0 +1,53 @@
+﻿<Page
+    x:Class="KinectVision.DirectXPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:KinectVision"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    mc:Ignorable="d" Loaded="Page_Loaded">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Click="Button_Click">ConnectToKinect</Button>
+            <Button Click="Button_Click_1">LoadFile</Button>
+            <Button Click="Button_Click_3">&gt;</Button>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <canvas:CanvasAnimatedControl Grid.Column="0" x:Name="canvas" ClearColor="CornflowerBlue" Draw="canvas_Draw"></canvas:CanvasAnimatedControl>
+            <SwapChainPanel Grid.Column="1" x:Name="swapChainPanel">
+                <TextBlock Text="Hello from XAML!"
+               HorizontalAlignment="Right"
+               VerticalAlignment="Top"
+               FontSize="30" />
+            </SwapChainPanel>
+        </Grid>
+    </Grid>
+
+
+  <Page.BottomAppBar>
+    <AppBar x:Name="bottomAppBar" Padding="10,0,10,0">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+        <AppBarButton AutomationProperties.Name="Sample Button"
+                      AutomationProperties.AutomationId="SampleAppBarButton0"
+                      Click="AppBarButton_Click"/>
+        <AppBarButton AutomationProperties.Name="Sample Button"
+                      AutomationProperties.AutomationId="SampleAppBarButton1"
+                      Click="AppBarButton_Click"/>
+        <AppBarButton AutomationProperties.Name="Sample Button"
+                      AutomationProperties.AutomationId="SampleAppBarButton2"
+                      Click="AppBarButton_Click"/>
+
+      </StackPanel>
+    </AppBar>
+  </Page.BottomAppBar>
+</Page>
