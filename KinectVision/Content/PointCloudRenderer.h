@@ -4,6 +4,7 @@
 #include "..\Common\StepTimer.h"
 #include "..\Common\DeviceResources.h"
 #include "..\Common\DirectXHelper.h"
+#include "..\KinectManager.h"
 
 namespace KinectVision
 {
@@ -16,7 +17,7 @@ namespace KinectVision
 
         PointCloudRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources)
             : deviceResources(deviceResources)
-            , degreesPerSecond(45)
+            , degreesPerSecond(15)
             , vertexCount(0)
             , isTracking(false)
             , loadingComplete(false)
@@ -91,14 +92,14 @@ namespace KinectVision
                 // Load mesh vertices. Each vertex has a position and a color.
                 static const VertexPositionColor cubeVertices[] =
                 {
-                    { XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
-                    { XMFLOAT3(-0.5f, -0.5f, 0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
-                    { XMFLOAT3(-0.5f, 0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
-                    { XMFLOAT3(-0.5f, 0.5f, 0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
-                    { XMFLOAT3(0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
-                    { XMFLOAT3(0.5f, -0.5f, 0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
-                    { XMFLOAT3(0.5f, 0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
-                    { XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
+                    { XMFLOAT3(-50.f, -50.f, -50.f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
+                    { XMFLOAT3(-50.f, -50.f, 50.f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
+                    { XMFLOAT3(-50.f, 50.f, -50.f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
+                    { XMFLOAT3(-50.f, 50.f, 50.f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
+                    { XMFLOAT3(50.f, -50.f, -50.f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
+                    { XMFLOAT3(50.f, -50.f, 50.f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
+                    { XMFLOAT3(50.f, 50.f, -50.f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
+                    { XMFLOAT3(50.f, 50.f, 50.f), XMFLOAT3(1.0f, 1.0f, 1.0f) },
                 };
 
                 D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
@@ -110,15 +111,41 @@ namespace KinectVision
                     deviceResources->GetD3DDevice()->CreateBuffer(
                     &vertexBufferDesc,
                     &vertexBufferData,
-                    &vertexBuffer
+                    &this->vertexBuffer
                     )
                 );
 
                 vertexCount = ARRAYSIZE(cubeVertices);
             });
 
+            auto createCoordinateAxesTask = (createPSTask && createVSTask).then([this](){
+                // Load mesh vertices. Each vertex has a position and a color.
+                static const VertexPositionColor cubeVertices[] =
+                {
+                    { XMFLOAT3(-500.f, 0.f, 0.f), XMFLOAT3(0.5f, 0.0f, 0.0f) },
+                    { XMFLOAT3(500.f, 0.f, 0.f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+                    { XMFLOAT3(0.f, -500.f, 0.f), XMFLOAT3(0.0f, 0.5f, 0.0f) },
+                    { XMFLOAT3(0.f, 500.f, 0.f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+                    { XMFLOAT3(0.f, 0.f, -500.f), XMFLOAT3(0.4f, 0.4f, 0.5f) },
+                    { XMFLOAT3(0.f, 0.f, 500.f), XMFLOAT3(0.4f, 0.4f, 1.0f) },
+                };
+
+                D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
+                vertexBufferData.pSysMem = cubeVertices;
+                vertexBufferData.SysMemPitch = 0;
+                vertexBufferData.SysMemSlicePitch = 0;
+                CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(cubeVertices), D3D11_BIND_VERTEX_BUFFER);
+                DX::ThrowIfFailed(
+                    deviceResources->GetD3DDevice()->CreateBuffer(
+                    &vertexBufferDesc,
+                    &vertexBufferData,
+                    &this->coordinateAxewsVertexBuffer
+                    )
+                );
+            });
+
             // Once the cube is loaded, the object is ready to be rendered.
-            createCubeTask.then([this]() {
+            (createCubeTask && createCoordinateAxesTask).then([this]() {
                 loadingComplete = true;
             });
         }
@@ -127,7 +154,7 @@ namespace KinectVision
         {
             Size outputSize = deviceResources->GetOutputSize();
             float aspectRatio = outputSize.Width / outputSize.Height;
-            float fovAngleY = 70.0f * XM_PI / 180.0f;
+            float fovAngleY = 20.0f * XM_PI / 180.0f;
 
             // This is a simple example of change that can be made when the app is in
             // portrait or snapped view.
@@ -147,7 +174,7 @@ namespace KinectVision
                 fovAngleY,
                 aspectRatio,
                 0.01f,
-                100.0f
+                10000.0f
                 );
 
             XMFLOAT4X4 orientation = deviceResources->GetOrientationTransform3D();
@@ -160,9 +187,9 @@ namespace KinectVision
                 );
 
             // Eye is at (0,0.7,1.5), looking at point (0,-0.1,0) with the up-vector along the y-axis.
-            static const XMVECTORF32 eye = { 0.0f, 0.7f, 1.5f, 0.0f };
-            static const XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
-            static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
+            static const XMVECTORF32 eye = { 0.0f, 80.f, -1000.5f, 0.0f };
+            static const XMVECTORF32 at = { 0.0f, 0.0f, 1000.0f, 0.0f };
+            static const XMVECTORF32 up = { 0.0f, 0.0f, 50.0f, 0.0f };
 
             XMStoreFloat4x4(&constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
         }
@@ -175,6 +202,55 @@ namespace KinectVision
             pixelShader.Reset();
             constantBuffer.Reset();
             vertexBuffer.Reset();
+            coordinateAxewsVertexBuffer.Reset();
+        }
+
+        void UpdateDepthFrame(KinectManager^ kinectManager)
+        {
+            auto frame = kinectManager->GetDepthFrame();
+            if (frame == nullptr)
+                return;
+
+            static KinectVisionLib::Frame^ oldFrame = nullptr;
+            if (frame == oldFrame)
+            {
+                return;
+            }
+            oldFrame = frame;
+
+            // Load mesh vertices. Each vertex has a position and a color.
+            VertexPositionColor* cubeVertices = new VertexPositionColor[frame->Width * frame->Height];
+            int verticesCount = 0;
+            frame->ForEachPixel(ref new KinectVisionLib::PixelOp([cubeVertices, &verticesCount, frame](int x, int y, uint16 depth){
+                const int midX = frame->Width / 2;
+                const int midY = frame->Height / 2;
+                const float d0 = 500.f;
+                const float factor = 2.f;
+                if (depth != 0)
+                {
+                    cubeVertices[verticesCount].color = XMFLOAT3(1.0f, 1.0f, 1.0f);
+                    cubeVertices[verticesCount].pos = XMFLOAT3((x - midX) * depth / d0 / factor, (midY - y) * depth / d0 / factor, depth / factor);
+                    verticesCount++;
+                }
+            }));
+
+            //this->vertexBuffer.Reset();
+
+            D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
+            vertexBufferData.pSysMem = cubeVertices;
+            vertexBufferData.SysMemPitch = 0;
+            vertexBufferData.SysMemSlicePitch = 0;
+            CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(VertexPositionColor) * verticesCount, D3D11_BIND_VERTEX_BUFFER);
+            DX::ThrowIfFailed(
+                deviceResources->GetD3DDevice()->CreateBuffer(
+                    &vertexBufferDesc,
+                    &vertexBufferData,
+                    &this->vertexBuffer
+                )
+            );
+
+            this->vertexCount = verticesCount;
+            delete cubeVertices;
         }
 
         void Update(DX::StepTimer const& timer)
@@ -200,6 +276,14 @@ namespace KinectVision
 
             auto context = deviceResources->GetD3DDeviceContext();
 
+            DrawCube(context);
+
+            // Draw coordiante axes
+            DrawCoordinateAxes(context);
+        }
+
+        void DrawCoordinateAxes(ID3D11DeviceContext2* context)
+        {
             // Prepare the constant buffer to send it to the graphics device.
             context->UpdateSubresource(
                 constantBuffer.Get(),
@@ -208,7 +292,59 @@ namespace KinectVision
                 &constantBufferData,
                 0,
                 0
-                );
+            );
+
+            // Each vertex is one instance of the VertexPositionColor struct.
+            UINT stride = sizeof(VertexPositionColor);
+            UINT offset = 0;
+            context->IASetVertexBuffers(
+                0,
+                1,
+                this->coordinateAxewsVertexBuffer.GetAddressOf(),
+                &stride,
+                &offset
+            );
+
+            context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+
+            context->IASetInputLayout(inputLayout.Get());
+
+            // Attach our vertex shader.
+            context->VSSetShader(
+                vertexShader.Get(),
+                nullptr,
+                0
+            );
+
+            // Send the constant buffer to the graphics device.
+            context->VSSetConstantBuffers(
+                0,
+                1,
+                constantBuffer.GetAddressOf()
+            );
+
+            // Attach our pixel shader.
+            context->PSSetShader(
+                pixelShader.Get(),
+                nullptr,
+                0
+            );
+
+            // Draw the objects.
+            context->Draw(6, 0);
+        }
+
+        void DrawCube(ID3D11DeviceContext2* context)
+        {
+            // Prepare the constant buffer to send it to the graphics device.
+            context->UpdateSubresource(
+                constantBuffer.Get(),
+                0,
+                NULL,
+                &constantBufferData,
+                0,
+                0
+            );
 
             // Each vertex is one instance of the VertexPositionColor struct.
             UINT stride = sizeof(VertexPositionColor);
@@ -219,7 +355,7 @@ namespace KinectVision
                 vertexBuffer.GetAddressOf(),
                 &stride,
                 &offset
-                );
+            );
 
             context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
@@ -247,7 +383,7 @@ namespace KinectVision
             );
 
             // Draw the objects.
-            context->Draw(vertexCount, 0);
+            context->Draw(this->vertexCount, 0);
         }
 
 #pragma region Tracking_code
@@ -297,5 +433,7 @@ namespace KinectVision
         Microsoft::WRL::ComPtr<ID3D11VertexShader>    vertexShader;
         Microsoft::WRL::ComPtr<ID3D11PixelShader>    pixelShader;
         Microsoft::WRL::ComPtr<ID3D11Buffer>        constantBuffer;
+
+        Microsoft::WRL::ComPtr<ID3D11Buffer> coordinateAxewsVertexBuffer;
     };
 }
