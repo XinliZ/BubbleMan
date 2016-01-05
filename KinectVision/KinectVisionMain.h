@@ -4,10 +4,13 @@
 #include "Common\DeviceResources.h"
 #include "Content\Sample3DSceneRenderer.h"
 #include "Content\SampleFpsTextRenderer.h"
+#include "Content\PointCloudRenderer.h"
 
 // Renders Direct2D and 3D content on the screen.
 namespace KinectVision
 {
+    ref class KinectManager;
+
     class KinectVisionMain : public DX::IDeviceNotify
     {
     public:
@@ -18,7 +21,7 @@ namespace KinectVision
         void TrackingUpdate(float positionX) { m_pointerLocationX = positionX; }
         void StopTracking() { m_sceneRenderer->StopTracking(); }
         bool IsTracking() { return m_sceneRenderer->IsTracking(); }
-        void StartRenderLoop();
+        void StartRenderLoop(KinectManager^ kinectManager);
         void StopRenderLoop();
         Concurrency::critical_section& GetCriticalSection() { return m_criticalSection; }
 
@@ -27,15 +30,15 @@ namespace KinectVision
         virtual void OnDeviceRestored();
 
     private:
-        void ProcessInput();
-        void Update();
+        void ProcessInput(KinectManager^ kinectManager);
+        void Update(KinectManager^ kinectManager);
         bool Render();
 
         // Cached pointer to device resources.
         std::shared_ptr<DX::DeviceResources> m_deviceResources;
 
         // TODO: Replace with your own content renderers.
-        std::unique_ptr<Sample3DSceneRenderer> m_sceneRenderer;
+        std::unique_ptr<PointCloudRenderer> m_sceneRenderer;
         std::unique_ptr<SampleFpsTextRenderer> m_fpsTextRenderer;
 
         Windows::Foundation::IAsyncAction^ m_renderLoopWorker;

@@ -15,7 +15,7 @@ KinectVisionMain::KinectVisionMain(const std::shared_ptr<DX::DeviceResources>& d
     m_deviceResources->RegisterDeviceNotify(this);
 
     // TODO: Replace this with your app's content initialization.
-    m_sceneRenderer = std::unique_ptr<Sample3DSceneRenderer>(new Sample3DSceneRenderer(m_deviceResources));
+    m_sceneRenderer = std::unique_ptr<PointCloudRenderer>(new PointCloudRenderer(m_deviceResources));
 
     m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));
 
@@ -40,7 +40,7 @@ void KinectVisionMain::CreateWindowSizeDependentResources()
     m_sceneRenderer->CreateWindowSizeDependentResources();
 }
 
-void KinectVisionMain::StartRenderLoop()
+void KinectVisionMain::StartRenderLoop(KinectManager^ kinectManager)
 {
     // If the animation render loop is already running then do not start another thread.
     if (m_renderLoopWorker != nullptr && m_renderLoopWorker->Status == AsyncStatus::Started)
@@ -49,13 +49,13 @@ void KinectVisionMain::StartRenderLoop()
     }
 
     // Create a task that will be run on a background thread.
-    auto workItemHandler = ref new WorkItemHandler([this](IAsyncAction ^ action)
+    auto workItemHandler = ref new WorkItemHandler([this, kinectManager](IAsyncAction ^ action)
     {
         // Calculate the updated frame and render once per vertical blanking interval.
         while (action->Status == AsyncStatus::Started)
         {
             critical_section::scoped_lock lock(m_criticalSection);
-            Update();
+            Update(kinectManager);
             if (Render())
             {
                 m_deviceResources->Present();
@@ -73,9 +73,9 @@ void KinectVisionMain::StopRenderLoop()
 }
 
 // Updates the application state once per frame.
-void KinectVisionMain::Update() 
+void KinectVisionMain::Update(KinectManager^ kinectManager) 
 {
-    ProcessInput();
+    ProcessInput(kinectManager);
 
     // Update scene objects.
     m_timer.Tick([&]()
@@ -87,10 +87,12 @@ void KinectVisionMain::Update()
 }
 
 // Process all input from the user before updating game state
-void KinectVisionMain::ProcessInput()
+void KinectVisionMain::ProcessInput(KinectManager^ kinectManager)
 {
     // TODO: Add per frame input handling here.
     m_sceneRenderer->TrackingUpdate(m_pointerLocationX);
+
+    m_sceneRenderer->UpdateDepthFrame(kinectManager);
 }
 
 // Renders the current frame according to the current application state.
@@ -114,7 +116,7 @@ bool KinectVisionMain::Render()
     context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
 
     // Clear the back buffer and depth stencil view.
-    context->ClearRenderTargetView(m_deviceResources->GetBackBufferRenderTargetView(), DirectX::Colors::CornflowerBlue);
+    context->ClearRenderTargetView(m_deviceResources->GetBackBufferRenderTargetView(), DirectX::Colors::DarkBlue);
     context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
     // Render the scene objects.

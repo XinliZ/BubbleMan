@@ -85,11 +85,11 @@ DirectXPage::DirectXPage():
     // Run task on a dedicated high priority background thread.
     m_inputLoopWorker = ThreadPool::RunAsync(workItemHandler, WorkItemPriority::High, WorkItemOptions::TimeSliced);
 
-    m_main = std::unique_ptr<KinectVisionMain>(new KinectVisionMain(m_deviceResources));
-    m_main->StartRenderLoop();
-
     this->kinectManager = ref new KinectManager();
     this->kinectManager->Initialize(this->canvas);
+
+    m_main = std::unique_ptr<KinectVisionMain>(new KinectVisionMain(m_deviceResources));
+    m_main->StartRenderLoop(this->kinectManager);
 }
 
 DirectXPage::~DirectXPage()
@@ -117,7 +117,7 @@ void DirectXPage::LoadInternalState(IPropertySet^ state)
     // Put code to load app state here.
 
     // Start rendering when the app is resumed.
-    m_main->StartRenderLoop();
+    m_main->StartRenderLoop(this->kinectManager);
 }
 
 // Window event handlers.
@@ -127,7 +127,7 @@ void DirectXPage::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEvent
     m_windowVisible = args->Visible;
     if (m_windowVisible)
     {
-        m_main->StartRenderLoop();
+        m_main->StartRenderLoop(this->kinectManager);
     }
     else
     {

@@ -12,6 +12,8 @@ using namespace Windows::Storage;
 using namespace Windows::Storage::Pickers;
 using namespace Windows::Storage::Streams;
 
+using namespace KinectVision;
+
 KinectManager::KinectManager()
 {
     this->kinectVision = ref new KinectVisionLib::KinectVision();
@@ -96,10 +98,16 @@ void KinectManager::LoadNextFrame()
 void KinectManager::RenderView(CanvasDrawingSession^ drawingSession)
 {
     // The input
-    if (this->canvasBitmap != nullptr)
+    ICanvasImage^ img = this->canvasBitmap;
+    if (img != nullptr)
     {
-        drawingSession->DrawImage(this->canvasBitmap);
+        drawingSession->DrawImage(img);
     }
+}
+
+KinectVisionLib::Frame^ KinectManager::GetDepthFrame()
+{
+    return this->currentFrame;
 }
 
 void KinectManager::OnMultiSourceFrameArrived(MultiSourceFrameReader ^sender, MultiSourceFrameArrivedEventArgs ^args)
@@ -222,6 +230,8 @@ KinectVisionLib::Frame^ KinectManager::BuildFrameFromDepthFrame(DepthFrame^ dept
 
 void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
 {
+    this->currentFrame = frame;
+
     bool DoNotProcessForDebugging = false;
     if (DoNotProcessForDebugging)
     {

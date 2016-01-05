@@ -4,6 +4,8 @@
 
 namespace KinectVisionLib
 {
+    public delegate void PixelOp(int x, int y, uint16 depth);
+
     public ref class Frame sealed
     {
     public:
@@ -11,10 +13,10 @@ namespace KinectVisionLib
         Frame();
 
         Frame(const Platform::Array<uint16>^ bitmapBuffer, int width, int height);
-        //Frame(int width, int height, const Platform::Array<byte>^ bitmapBuffer);
-        Frame(WindowsPreview::Kinect::DepthFrame^ depthFrame);
+
 
         Microsoft::Graphics::Canvas::CanvasBitmap^ GetBitmap(Microsoft::Graphics::Canvas::ICanvasResourceCreator^ canvas);
+        void ForEachPixel(PixelOp^ action);
 
         property int Width {int get(){ return image->GetWidth(); }}
         property int Height {int get(){ return image->GetHeight(); }}

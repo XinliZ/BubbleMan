@@ -9,21 +9,6 @@ using namespace Platform;
 Frame::Frame()
 {
 }
-//
-//Frame::Frame(int width, int height, const Platform::Array<byte>^ bitmapBuffer)
-//{
-//    if (bitmapBuffer->Length != width * height)
-//    {
-//        throw ref new InvalidArgumentException("Invalid input. The buffer size doesn't match the pixel count");
-//    }
-//
-//    this->image = std::make_shared<KinectVisionLib::Core::DepthImage>(width, height, bitmapBuffer);
-//}
-
-Frame::Frame(WindowsPreview::Kinect::DepthFrame^ depthFrame)
-{
-    // TODO: To be impelemented
-}
 
 Frame::Frame(std::shared_ptr<KinectVisionLib::Core::Image<uint16>> image)
 {
@@ -48,6 +33,21 @@ CanvasBitmap^ Frame::GetBitmap(ICanvasResourceCreator^ canvas)
     }
     return nullptr;
 }
+
+void Frame::ForEachPixel(PixelOp^ action)
+{
+    for (int i = 0; i < this->image->GetHeight(); i++)
+    {
+        uint16* scan = this->image->GetScan0() + i * this->image->GetStride();
+        for (int j = 0; j < this->image->GetWidth(); j++)
+        {
+            action(j, i, *scan);
+
+            scan++;
+        }
+    }
+}
+
 //
 //void Frame::CopyToArray(Platform::WriteOnlyArray<uint16>^ buffer)
 //{
