@@ -4,6 +4,7 @@
 #include "Common\DeviceResources.h"
 #include "Content\Sample3DSceneRenderer.h"
 #include "Content\SampleFpsTextRenderer.h"
+#include "Content\PointCloudRenderer.h"
 
 // Renders Direct2D and 3D content on the screen.
 namespace KinectVision
@@ -35,7 +36,7 @@ namespace KinectVision
         std::shared_ptr<DX::DeviceResources> m_deviceResources;
 
         // TODO: Replace with your own content renderers.
-        std::unique_ptr<Sample3DSceneRenderer> m_sceneRenderer;
+        std::unique_ptr<PointCloudRenderer> m_sceneRenderer;
         std::unique_ptr<SampleFpsTextRenderer> m_fpsTextRenderer;
 
         Windows::Foundation::IAsyncAction^ m_renderLoopWorker;
