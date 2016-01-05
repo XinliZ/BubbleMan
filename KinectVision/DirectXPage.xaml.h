@@ -63,6 +63,8 @@ namespace KinectVision
         float radiusY;
         void Page_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 
+        float mouseXPosition;
+
         KinectManager^ kinectManager;
         void Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
         void Button_Click_1(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);

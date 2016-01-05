@@ -169,6 +169,7 @@ void DirectXPage::OnPointerPressed(Object^ sender, PointerEventArgs^ e)
 {
     // When the pointer is pressed begin tracking the pointer movement.
     m_main->StartTracking();
+    this->mouseXPosition = e->CurrentPoint->Position.X;
 }
 
 void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ e)
@@ -176,7 +177,7 @@ void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ e)
     // Update the pointer tracking code.
     if (m_main->IsTracking())
     {
-        m_main->TrackingUpdate(e->CurrentPoint->Position.X);
+        m_main->TrackingUpdate(e->CurrentPoint->Position.X - this->mouseXPosition);
     }
 }
 

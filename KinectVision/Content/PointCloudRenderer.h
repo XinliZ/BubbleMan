@@ -17,7 +17,7 @@ namespace KinectVision
 
         PointCloudRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources)
             : deviceResources(deviceResources)
-            , degreesPerSecond(15)
+            , startPosition(XM_PI + 0.1f)
             , vertexCount(0)
             , isTracking(false)
             , loadingComplete(false)
@@ -122,12 +122,12 @@ namespace KinectVision
                 // Load mesh vertices. Each vertex has a position and a color.
                 static const VertexPositionColor cubeVertices[] =
                 {
-                    { XMFLOAT3(-500.f, 0.f, 0.f), XMFLOAT3(0.5f, 0.0f, 0.0f) },
-                    { XMFLOAT3(500.f, 0.f, 0.f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-                    { XMFLOAT3(0.f, -500.f, 0.f), XMFLOAT3(0.0f, 0.5f, 0.0f) },
-                    { XMFLOAT3(0.f, 500.f, 0.f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-                    { XMFLOAT3(0.f, 0.f, -500.f), XMFLOAT3(0.4f, 0.4f, 0.5f) },
-                    { XMFLOAT3(0.f, 0.f, 500.f), XMFLOAT3(0.4f, 0.4f, 1.0f) },
+                    { XMFLOAT3(-100.f, 0.f, 0.f), XMFLOAT3(0.5f, 0.0f, 0.0f) },
+                    { XMFLOAT3(100.f, 0.f, 0.f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+                    { XMFLOAT3(0.f, -100.f, 0.f), XMFLOAT3(0.0f, 0.5f, 0.0f) },
+                    { XMFLOAT3(0.f, 100.f, 0.f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+                    { XMFLOAT3(0.f, 0.f, -100.f), XMFLOAT3(0.4f, 0.4f, 0.5f) },
+                    { XMFLOAT3(0.f, 0.f, 100.f), XMFLOAT3(0.4f, 0.4f, 1.0f) },
                 };
 
                 D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
@@ -187,11 +187,13 @@ namespace KinectVision
                 );
 
             // Eye is at (0,0.7,1.5), looking at point (0,-0.1,0) with the up-vector along the y-axis.
-            static const XMVECTORF32 eye = { 0.0f, 80.f, -1000.5f, 0.0f };
-            static const XMVECTORF32 at = { 0.0f, 0.0f, 1000.0f, 0.0f };
+            static const XMVECTORF32 eye = { 0.0f, -50.f, 400.5f, 0.0f };
+            static const XMVECTORF32 at = { 0.0f, -20.f, 0.0f, 0.0f };
             static const XMVECTORF32 up = { 0.0f, 0.0f, 50.0f, 0.0f };
 
             XMStoreFloat4x4(&constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
+
+            Rotate(startPosition);
         }
 
         void ReleaseDeviceDependentResources()
@@ -255,15 +257,7 @@ namespace KinectVision
 
         void Update(DX::StepTimer const& timer)
         {
-            if (!isTracking)
-            {
-                // Convert degrees to radians, then convert seconds to rotation angle
-                float radiansPerSecond = XMConvertToRadians(degreesPerSecond);
-                double totalRotation = timer.GetTotalSeconds() * radiansPerSecond;
-                float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
 
-                Rotate(radians);
-            }
         }
 
         void Render()
@@ -406,7 +400,7 @@ namespace KinectVision
         {
             if (isTracking)
             {
-                float radians = XM_2PI * 2.0f * positionX / deviceResources->GetOutputSize().Width;
+                float radians = startPosition + XM_2PI * 2.0f * positionX / deviceResources->GetOutputSize().Width;
                 Rotate(radians);
             }
         }
@@ -423,7 +417,7 @@ namespace KinectVision
         bool isTracking;
         bool loadingComplete;
         int vertexCount;
-        float degreesPerSecond;
+        float startPosition;
 
         ModelViewProjectionConstantBuffer    constantBufferData;
 
