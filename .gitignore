@@ -4,7 +4,9 @@
 !/KinectVision
 /KinectVision/x64
 /KinectVision/Generated Files
+/KinectVision/*.user
 
 !/KinectVisionLib
 /KinectVisionLib/x64
 /KinectVisionLib/Generated Files
+/KinectVisionLib/*.user
