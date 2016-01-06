@@ -5,6 +5,7 @@
 namespace KinectVisionLib
 {
     public delegate void PixelOp(int x, int y, uint16 depth);
+    public delegate void LineOp(uint16* scan, int y, int width);
 
     public ref class Frame sealed
     {
@@ -17,6 +18,7 @@ namespace KinectVisionLib
 
         Microsoft::Graphics::Canvas::CanvasBitmap^ GetBitmap(Microsoft::Graphics::Canvas::ICanvasResourceCreator^ canvas);
         void ForEachPixel(PixelOp^ action);
+        void ForEachLine(LineOp^ action);
 
         property int Width {int get(){ return image->GetWidth(); }}
         property int Height {int get(){ return image->GetHeight(); }}

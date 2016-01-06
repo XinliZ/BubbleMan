@@ -216,16 +216,21 @@ namespace KinectVision
             // Load mesh vertices. Each vertex has a position and a color.
             VertexPositionColor* cubeVertices = new VertexPositionColor[frame->Width * frame->Height];
             int verticesCount = 0;
-            frame->ForEachPixel(ref new KinectVisionLib::PixelOp([cubeVertices, &verticesCount, frame](int x, int y, uint16 depth){
+            frame->ForEachLine(ref new KinectVisionLib::LineOp([cubeVertices, &verticesCount, frame](uint16* scan, int y, int width){
                 const int midX = frame->Width / 2;
                 const int midY = frame->Height / 2;
                 const float d0 = 500.f;
                 const float factor = 2.f;
-                if (depth != 0)
+                for (int i = 0; i < width; i++)
                 {
-                    cubeVertices[verticesCount].color = XMFLOAT3(1.0f, 1.0f, 1.0f);
-                    cubeVertices[verticesCount].pos = XMFLOAT3((x - midX) * depth / d0 / factor, (midY - y) * depth / d0 / factor, depth / factor);
-                    verticesCount++;
+                    if (*scan != 0)
+                    {
+                        cubeVertices[verticesCount].color = XMFLOAT3(1.0f, 1.0f, 1.0f);
+                        cubeVertices[verticesCount].pos = XMFLOAT3((i - midX) * (*scan) / d0 / factor, (midY - y) * (*scan) / d0 / factor, (*scan) / factor);
+                        verticesCount++;
+                    }
+
+                    scan++;
                 }
             }));
 

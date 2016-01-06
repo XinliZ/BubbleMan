@@ -48,6 +48,15 @@ void Frame::ForEachPixel(PixelOp^ action)
     }
 }
 
+void Frame::ForEachLine(LineOp^ action)
+{
+    for (int i = 0; i < this->image->GetHeight(); i++)
+    {
+        uint16* scan = this->image->GetScan0() + i * this->image->GetStride();
+        action(scan, i, this->image->GetWidth());
+    }
+}
+
 //
 //void Frame::CopyToArray(Platform::WriteOnlyArray<uint16>^ buffer)
 //{
