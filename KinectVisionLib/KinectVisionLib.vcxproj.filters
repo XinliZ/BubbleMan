@@ -29,9 +29,6 @@
     <ClCompile Include="WinRT\KinectVision.cpp">
       <Filter>WinRT</Filter>
     </ClCompile>
-    <ClCompile Include="WinRT\ProcessStats.cpp">
-      <Filter>WinRT</Filter>
-    </ClCompile>
     <ClCompile Include="Core\KinectVisionManager.cpp">
       <Filter>Core</Filter>
     </ClCompile>

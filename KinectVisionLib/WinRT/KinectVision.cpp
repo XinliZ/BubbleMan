@@ -25,6 +25,6 @@ Windows::Foundation::IAsyncOperation<ProcessStats^>^ KinectVision::ProcessFrame(
         auto result = manager.FeedFrame(frame->GetImage());
 
         // TODO: The scanline0 may not be begin of buffer;
-        return ref new ProcessStats(ref new Frame(result));
+        return ref new ProcessStats(ref new Frame(result), frame);
     });
 }

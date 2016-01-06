@@ -230,17 +230,17 @@ KinectVisionLib::Frame^ KinectManager::BuildFrameFromDepthFrame(DepthFrame^ dept
 
 void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
 {
-    this->currentFrame = frame;
-
     bool DoNotProcessForDebugging = false;
     if (DoNotProcessForDebugging)
     {
         this->canvasBitmap = frame->GetBitmap(this->canvasResourceCreator);
+        this->currentFrame = frame;
     }
     else
     {
         create_task(kinectVision->ProcessFrame(frame)).then([this](KinectVisionLib::ProcessStats^ stats){
             this->canvasBitmap = stats->GetDebugFrame()->GetBitmap(this->canvasResourceCreator);
+            this->currentFrame = stats->GetDepthFrame();
         });
     }
 }
