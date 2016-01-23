@@ -22,9 +22,10 @@ namespace KinectVisionLib{
             {
                 this->frameCount++;
 
+                //return SegmentThenTracking(image);
                 //return SegmentEveryFrame(image);
-                return SegmentThenTracking(image);
                 //return ImageSubstraction(image);
+                return SegmentWithBackground(image);
             }
 
         private:
@@ -43,9 +44,9 @@ namespace KinectVisionLib{
                 }
                 else
                 {
-                    auto backgroundImage = backgroundManager->Update(image);
-                    ImageSegmentation segment(10);
-                    result = segment.SegmentImageWithMask(image, backgroundImage);
+                    auto backgroundRemovedImage = backgroundManager->Update(image);
+                    this->chipManager.Update(image, backgroundRemovedImage);
+                    result = backgroundRemovedImage;
 
                 }
                 return result;
@@ -124,7 +125,7 @@ namespace KinectVisionLib{
             // Record the black dots (invalid depth pixels) for a few frames and use them to remove the noises.
             shared_ptr<DifferencialImage> blackDotsMask;            // Deprecated. Use background manager
             shared_ptr<BackgroundManager> backgroundManager;
-            shared_ptr<ChipManager> chipManager;
+            ChipManager chipManager;
 
             int frameCount = 0;
         };

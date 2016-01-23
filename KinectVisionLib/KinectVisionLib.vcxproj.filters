@@ -110,6 +110,9 @@
     <ClInclude Include="Core\ChipTracker\ErrorMap.h">
       <Filter>Core\ChipTracker</Filter>
     </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

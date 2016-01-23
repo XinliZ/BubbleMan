@@ -24,7 +24,7 @@ namespace KinectVisionLib
         private:
             shared_ptr<DepthImage> SubstractAndUpdateBackground(shared_ptr<DepthImage> image)
             {
-                double backgroundThreshold = 1.05;        // TODO: Should make this a configuration value
+                float backgroundThreshold = 1.05f;        // TODO: Should make this a configuration value
                 shared_ptr<DepthImage> result = make_shared<DepthImage>(image->GetWidth(), image->GetHeight());
                 for (int i = 0; i < image->GetHeight(); i++)
                 {
@@ -37,6 +37,7 @@ namespace KinectVisionLib
                         if (*imageScan == 0)
                         {
                             // Ignore invalid input point
+                            // result would be remain 0
                         }
                         else if (*bgScan == 0 || *imageScan > *bgScan)
                         {

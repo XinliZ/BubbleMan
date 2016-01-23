@@ -26,6 +26,20 @@ namespace KinectVisionLib{
                 return maxAreaCode++;
             }
 
+            void ReplaceAreaCode(uint16 areaCode, uint16 newCode)
+            {
+                for (int i = 0; i < GetHeight(); i++)
+                {
+                    uint16* scan = GetScan0() + i * GetStride();
+                    for (int j = 0; j < GetWidth(); j++)
+                    {
+                        if (*scan == areaCode) *scan = newCode;
+
+                        scan++;
+                    }
+                }
+            }
+
             bool IsOpen(Point point) const
             {
                 return GetPixel(point) == 0;
@@ -50,6 +64,8 @@ namespace KinectVisionLib{
                     }
                 }
             }
+
+            
 
         private:
 

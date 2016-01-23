@@ -21,7 +21,7 @@ namespace KinectVisionLib{
 
                 AddSeeds(seeds);
 
-                Iterate();
+                Iterate(nullptr);
                 return this->areaMap;
             }
 
@@ -32,12 +32,12 @@ namespace KinectVisionLib{
 
                 AddSeeds(seeds, mask);
 
-                Iterate();
+                Iterate(mask);
                 return this->areaMap;
             }
 
         private:
-            void Iterate()
+            void Iterate(shared_ptr<DepthImage> mask)
             {
                 while (!seeds.empty())
                 {
@@ -46,7 +46,7 @@ namespace KinectVisionLib{
 
                     if (areaMap->IsOpen(point) && IsValidPoint(point))
                     {
-                        GrowArea(point);    
+                        GrowArea(point, mask);    
                     }
                 }
             }
@@ -62,9 +62,9 @@ namespace KinectVisionLib{
                 // Start with center of the image
                 seeds.push_back(Point(image->GetWidth() / 2, image->GetHeight() / 2));
 
-                for (int i = 3; i < image->GetHeight(); i += 20)
+                for (int i = 3; i < image->GetHeight() - 3; i += 20)
                 {
-                    for (int j = 3; j < image->GetWidth(); j += 20)
+                    for (int j = 3; j < image->GetWidth() - 3; j += 20)
                     {
                         seeds.push_back(Point(j, i));
                     }
@@ -76,9 +76,9 @@ namespace KinectVisionLib{
                 // Start with center of the image
                 AddSeedIfValid(seeds, Point(image->GetWidth() / 2, image->GetHeight() / 2), mask);
 
-                for (int i = 3; i < image->GetHeight(); i += 20)
+                for (int i = 3; i < image->GetHeight() - 3; i += 20)
                 {
-                    for (int j = 3; j < image->GetWidth(); j += 20)
+                    for (int j = 3; j < image->GetWidth() - 3; j += 20)
                     {
                         AddSeedIfValid(seeds, Point(j, i), mask);
                     }
@@ -87,31 +87,26 @@ namespace KinectVisionLib{
 
             void AddSeedIfValid(deque<Point>& seeds, Point point, shared_ptr<DepthImage> mask)
             {
-                if (mask->Test3x3Window(point, [](uint16* pixels, int length){
-                    int count = 0;
-                    for (int i = 0; i < length; i++)
-                    {
-                        if (pixels[i] != 0)
-                        {
-                            count++;
-                        }
-                    }
-                    return count >= 9;        // TODO: Adjustable thresholds
-                }))
+                if (mask->Test5x5Window(point, [](uint16 pixel){
+                    return pixel == 0 ? 0 : 1;
+                }, [](int count){return count > 20; }))     // TODO: Adjustable thresholds: The ratial to place the seed point
                 {
                     seeds.push_back(point);
                 }
             }
 
-            void GrowArea(Point point)
+            void GrowArea(Point point, shared_ptr<DepthImage> mask)
             {
                 uint16 areaCode = areaMap->CreateNewAreaCode();
 
-                GrowArea(point, areaCode);
+                GrowArea(point, areaCode, mask);
             }
 
-            void GrowArea(Point point, uint16 areaCode)
+            void GrowArea(Point point, uint16 areaCode, shared_ptr<DepthImage> mask)
             {
+                auto imageRect = image->GetRect().Extend(-1, -1, -1, -1);
+                int backgroundPixelCount = 0;
+                int areaPixelCount = 0;
                 deque<Point> growingSeeds;
                 //growingSeeds.reserve(2048);        // Random number
                 growingSeeds.push_back(point);
@@ -122,8 +117,14 @@ namespace KinectVisionLib{
                     growingSeeds.pop_front();
 
                     // Leave 1 pixel edge to make sure the pixel read/write safe
-                    if (image->GetRect().Extend(-1, -1, -1, -1).IsInside(seed))
+                    if (imageRect.IsInside(seed))
                     {
+                        areaPixelCount++;
+                        if (mask->GetPixel(seed) == 0)
+                        {
+                            backgroundPixelCount++;
+                        }
+
                         // 0: Center pixel, 1: left, 2: top, 3: right, 4: bottom
                         uint16 pixelValues[5];
                         ReadSurroundingPixels(pixelValues, seed);
@@ -135,6 +136,12 @@ namespace KinectVisionLib{
                         TestPixelOnBottom(pixelValues, seed.DownNeighbor(), areaCode, growingSeeds);
                     }
                 }
+
+                // TODO: Too slow
+                //if (backgroundPixelCount > areaPixelCount * 0.8f)          // Adjustable threshold
+                //{
+                //    this->areaMap->ReplaceAreaCode(areaCode, 0);
+                //}
             }
 
             // Pick up 5 pixels around center point

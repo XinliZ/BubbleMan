@@ -13,14 +13,19 @@ namespace KinectVisionLib
         class ChipTracker
         {
         public:
-            ChipTracker()
+            ChipTracker(int id)
+                : id(id)
             {}
+
+            int GetId() { return id; }
 
             void UpdatePosition(shared_ptr<DepthImage> depthFrame)
             {
                 float score = 0.0;
                 this->chip = FindMatch(depthFrame, deltaMotionState, &score);
             }
+
+            bool IsActive() const { return isActive; }
 
         private:
             shared_ptr<Chip> FindMatch(shared_ptr<DepthImage> depthImage, DeltaMotionState deltaMotionState, float* score)
@@ -31,6 +36,7 @@ namespace KinectVisionLib
             shared_ptr<Chip> FindMatchWith12Ways(shared_ptr<DepthImage> depthImage, DeltaMotionState deltaMotionState, float* score)
             {
                 // Iterate the search process
+                return nullptr;
             }
             shared_ptr<ErrorMap> Match(shared_ptr<Chip> chip, shared_ptr<DepthImage> depthFrame, DeltaMotionState deltaMotionState)
             {
@@ -42,9 +48,12 @@ namespace KinectVisionLib
             //}
 
         private:
+            int id;
             shared_ptr<Chip> chip;
             MotionState motionState;
             DeltaMotionState deltaMotionState;
+
+            bool isActive;
         };
     }
 }

@@ -78,17 +78,28 @@ namespace KinectVisionLib{
 
             bool Test3x3Window(Point point, function<bool(T*, int)> test)
             {
-                T result[9];
-                result[0] = GetPixel(point.Offset(-1, -1));
-                result[1] = GetPixel(point.Offset(0, -1));
-                result[2] = GetPixel(point.Offset(1, -1));
-                result[3] = GetPixel(point.Offset(-1, 0));
-                result[4] = GetPixel(point.Offset(0, 0));
-                result[5] = GetPixel(point.Offset(1, 0));
-                result[6] = GetPixel(point.Offset(-1, 1));
-                result[7] = GetPixel(point.Offset(0, 1));
-                result[8] = GetPixel(point.Offset(1, 1));
-                return test(result, 9);
+                return TestNxNWindow(1, point, test, threshold);
+            }
+
+            bool Test5x5Window(Point point, function<int(T)> test, function<bool(int)> threshold)
+            {
+                // Extend 2 pixel on each direction
+                return TestNxNWindow(2, point, test, threshold);
+            }
+
+            // Expend range amount on each direction
+            bool TestNxNWindow(int range, Point point, function<int(T)> test, function<bool(int)> threshold)
+            {
+                int resultCount = 0;
+                for (int i = point.GetY() - range; i <= point.GetY() + range; i++)
+                {
+                    const T* scan = GetScan0() + i * GetStride();
+                    for (int j = point.GetX() - range; j <= point.GetX() + range; j++)
+                    {
+                        resultCount += test(*(scan + j));
+                    }
+                }
+                return threshold(resultCount);
             }
 /*
             shared_ptr<Image> Apply(function<void(uint16*, uint16*, uint16*, uint16*)> transform, shared_ptr<Image> input, shared_ptr<Image> blackDotsMask)
