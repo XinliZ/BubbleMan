@@ -10,3 +10,5 @@
 /KinectVisionLib/x64
 /KinectVisionLib/Generated Files
 /KinectVisionLib/*.user
+
+!/TestImages

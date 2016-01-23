@@ -154,14 +154,7 @@ namespace KinectVision
         {
             Size outputSize = deviceResources->GetOutputSize();
             float aspectRatio = outputSize.Width / outputSize.Height;
-            float fovAngleY = 20.0f * XM_PI / 180.0f;
-
-            // This is a simple example of change that can be made when the app is in
-            // portrait or snapped view.
-            if (aspectRatio < 1.0f)
-            {
-                fovAngleY *= 2.0f;
-            }
+            float fovAngleY = 2.0f * 20.0f * XM_PI / 180.0f;
 
             // Note that the OrientationTransform3D matrix is post-multiplied here
             // in order to correctly orient the scene to match the display orientation.
@@ -231,7 +224,7 @@ namespace KinectVision
                 if (depth != 0)
                 {
                     cubeVertices[verticesCount].color = XMFLOAT3(1.0f, 1.0f, 1.0f);
-                    cubeVertices[verticesCount].pos = XMFLOAT3((x - midX) * depth / d0 / factor, (midY - y) * depth / d0 / factor, depth / factor);
+                    cubeVertices[verticesCount].pos = XMFLOAT3((midX - x) * depth / d0 / factor, (midY - y) * depth / d0 / factor, depth / factor);
                     verticesCount++;
                 }
             }));
