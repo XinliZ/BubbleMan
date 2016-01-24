@@ -21,6 +21,7 @@ namespace KinectVision
             , vertexCount(0)
             , isTracking(false)
             , loadingComplete(false)
+            , renderPointCloudMesh(false)
         {
             CreateDeviceDependentResources();
             CreateWindowSizeDependentResources();
@@ -216,20 +217,18 @@ namespace KinectVision
             // Load mesh vertices. Each vertex has a position and a color.
             VertexPositionColor* cubeVertices = new VertexPositionColor[frame->Width * frame->Height];
             int verticesCount = 0;
-            frame->ForEachPixel(ref new KinectVisionLib::PixelOp([cubeVertices, &verticesCount, frame](int x, int y, uint16 depth){
-                const int midX = frame->Width / 2;
-                const int midY = frame->Height / 2;
+            frame->ForEachPixel(ref new KinectVisionLib::PixelOp([this, cubeVertices, &verticesCount, frame](int x, int y, uint16 depth){
+                const int centerX = frame->Width / 2;
+                const int centerY = frame->Height / 2;
                 const float d0 = 500.f;
                 const float factor = 2.f;
-                if (depth != 0)
+                if (this->renderPointCloudMesh || depth != 0)
                 {
                     cubeVertices[verticesCount].color = XMFLOAT3(1.0f, 1.0f, 1.0f);
-                    cubeVertices[verticesCount].pos = XMFLOAT3((midX - x) * depth / d0 / factor, (midY - y) * depth / d0 / factor, depth / factor);
+                    cubeVertices[verticesCount].pos = XMFLOAT3((centerX - x) * depth / d0 / factor, (centerY - y) * depth / d0 / factor, depth / factor);
                     verticesCount++;
                 }
             }));
-
-            //this->vertexBuffer.Reset();
 
             D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
             vertexBufferData.pSysMem = cubeVertices;
@@ -245,7 +244,62 @@ namespace KinectVision
             );
 
             this->vertexCount = verticesCount;
+
+            if (this->renderPointCloudMesh)
+            {
+                CreatePointCloudIndices(frame, indexBuffer, &indexCount);
+            }
+
             delete cubeVertices;
+        }
+
+        int GetIndex(int x, int y, int width)
+        {
+            return y * width + x;
+        }
+
+        void CreatePointCloudIndices(KinectVisionLib::Frame^ frame, Microsoft::WRL::ComPtr<ID3D11Buffer>&indexBuffer, int* indexCount)
+        {
+            int width = frame->Width;
+            int height = frame->Height;
+            int countOfTriangle = (width - 1) * (height - 1) * 2;
+            unsigned int* indices = new unsigned int[countOfTriangle * 3];
+
+            int indexIndex = 0;
+            frame->ForEachInterPixel(ref new KinectVisionLib::InterPixelOp([this, indices, &indexIndex, width](int x, int y, uint16 depth0, uint16 depth1, uint16 depth2, uint16 depth3){
+                if (depth0 > 200 && depth1 > 200 && depth2 > 200)
+                {
+                    indices[indexIndex] = GetIndex(x, y, width);
+                    indices[indexIndex + 1] = GetIndex(x + 1, y, width);
+                    indices[indexIndex + 2] = GetIndex(x, y + 1, width);
+                    indexIndex += 3;
+                }
+                if (depth1 > 200 && depth2 > 200 && depth3 > 200)
+                {
+                    indices[indexIndex] = GetIndex(x + 1, y, width);
+                    indices[indexIndex + 1] = GetIndex(x + 1, y + 1, width);
+                    indices[indexIndex + 2] = GetIndex(x, y + 1, width);
+                    indexIndex += 3;
+                }
+            }));
+            if (indexCount != nullptr)
+            {
+                *indexCount = indexIndex;
+            }
+
+            D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
+            indexBufferData.pSysMem = indices;
+            indexBufferData.SysMemPitch = 0;
+            indexBufferData.SysMemSlicePitch = 0;
+            CD3D11_BUFFER_DESC indexBufferDesc(sizeof(*indices) * indexIndex, D3D11_BIND_INDEX_BUFFER);
+            DX::ThrowIfFailed(
+                this->deviceResources->GetD3DDevice()->CreateBuffer(
+                &indexBufferDesc,
+                &indexBufferData,
+                &indexBuffer
+                )
+            );
+            delete indices;
         }
 
         void Update(DX::StepTimer const& timer)
@@ -263,13 +317,13 @@ namespace KinectVision
 
             auto context = deviceResources->GetD3DDeviceContext();
 
-            DrawCube(context);
+            RenderPointCloud(context);
 
             // Draw coordiante axes
-            DrawCoordinateAxes(context);
+            RenderCoordinateAxes(context);
         }
 
-        void DrawCoordinateAxes(ID3D11DeviceContext2* context)
+        void RenderCoordinateAxes(ID3D11DeviceContext2* context)
         {
             // Prepare the constant buffer to send it to the graphics device.
             context->UpdateSubresource(
@@ -321,7 +375,7 @@ namespace KinectVision
             context->Draw(6, 0);
         }
 
-        void DrawCube(ID3D11DeviceContext2* context)
+        void RenderPointCloud(ID3D11DeviceContext2* context)
         {
             // Prepare the constant buffer to send it to the graphics device.
             context->UpdateSubresource(
@@ -344,7 +398,19 @@ namespace KinectVision
                 &offset
             );
 
-            context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+            if (this->renderPointCloudMesh)
+            {
+                context->IASetIndexBuffer(
+                    this->indexBuffer.Get(),
+                    DXGI_FORMAT_R32_UINT,
+                    0);
+
+                context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+            }
+            else
+            {
+                context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+            }
 
             context->IASetInputLayout(inputLayout.Get());
 
@@ -370,7 +436,14 @@ namespace KinectVision
             );
 
             // Draw the objects.
-            context->Draw(this->vertexCount, 0);
+            if (this->renderPointCloudMesh)
+            {
+                context->DrawIndexed(this->indexCount, 0, 0);
+            }
+            else
+            {
+                context->Draw(this->vertexCount, 0);
+            }
         }
 
 #pragma region Tracking_code
@@ -410,13 +483,17 @@ namespace KinectVision
         bool isTracking;
         bool loadingComplete;
         int vertexCount;
+        int indexCount;
         float startPosition;
+
+        bool renderPointCloudMesh;      // Should we render as mesh or render as points
 
         ModelViewProjectionConstantBuffer    constantBufferData;
 
         // Direct3D resources for cube geometry.
         Microsoft::WRL::ComPtr<ID3D11InputLayout>    inputLayout;
         Microsoft::WRL::ComPtr<ID3D11Buffer>        vertexBuffer;
+        Microsoft::WRL::ComPtr<ID3D11Buffer>        indexBuffer;
         Microsoft::WRL::ComPtr<ID3D11VertexShader>    vertexShader;
         Microsoft::WRL::ComPtr<ID3D11PixelShader>    pixelShader;
         Microsoft::WRL::ComPtr<ID3D11Buffer>        constantBuffer;
