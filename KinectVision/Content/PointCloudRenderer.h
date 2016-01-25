@@ -21,7 +21,7 @@ namespace KinectVision
             , vertexCount(0)
             , isTracking(false)
             , loadingComplete(false)
-            , renderPointCloudMesh(true)
+            , renderPointCloudMesh(false)
         {
             CreateDeviceDependentResources();
             CreateWindowSizeDependentResources();
