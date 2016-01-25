@@ -237,3 +237,11 @@ void KinectVision::DirectXPage::Button_Click_3(Platform::Object^ sender, Windows
 {
     this->kinectManager->LoadNextFrame();
 }
+
+
+void KinectVision::DirectXPage::CheckBox_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+    bool enabled = ((CheckBox^)sender)->IsChecked->Value;
+    critical_section::scoped_lock lock(m_main->GetCriticalSection());
+    this->m_main->EnableMeshRendering(enabled);
+}

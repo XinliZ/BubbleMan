@@ -22,6 +22,7 @@ namespace KinectVision
         bool IsTracking() { return m_sceneRenderer->IsTracking(); }
         void StartRenderLoop(KinectManager^ kinectManager);
         void StopRenderLoop();
+        void EnableMeshRendering(bool enabled) { m_sceneRenderer->EnableMeshRendering(enabled); }
         Concurrency::critical_section& GetCriticalSection() { return m_criticalSection; }
 
         // IDeviceNotify

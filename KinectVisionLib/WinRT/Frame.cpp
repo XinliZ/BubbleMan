@@ -48,6 +48,22 @@ void Frame::ForEachPixel(PixelOp^ action)
     }
 }
 
+void Frame::ForEachInterPixel(InterPixelOp^ action)
+{
+    for (int i = 0; i < this->image->GetHeight() - 1; i++)
+    {
+        uint16* scan = this->image->GetScan0() + i * this->image->GetStride();
+        uint16* scan1 = this->image->GetScan0() + (i + 1) * this->image->GetStride();
+        for (int j = 0; j < this->image->GetWidth() - 1; j++)
+        {
+            action(j, i, *scan, *(scan + 1), *scan1, *(scan1 + 1));
+
+            scan++;
+            scan1++;
+        }
+    }
+}
+
 //
 //void Frame::CopyToArray(Platform::WriteOnlyArray<uint16>^ buffer)
 //{
