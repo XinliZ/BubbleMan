@@ -98,7 +98,7 @@ void KinectManager::LoadNextFrame()
 void KinectManager::RenderView(CanvasDrawingSession^ drawingSession)
 {
     // The input
-    ICanvasImage^ img = this->canvasBitmap;
+    ICanvasImage^ img = this->canvasBitmap.GetData();
     if (img != nullptr)
     {
         drawingSession->DrawImage(img);
@@ -235,12 +235,12 @@ void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
     bool DoNotProcessForDebugging = false;
     if (DoNotProcessForDebugging)
     {
-        this->canvasBitmap = frame->GetBitmap(this->canvasResourceCreator);
+        this->canvasBitmap.SetData(frame->GetBitmap(this->canvasResourceCreator));
     }
     else
     {
         create_task(kinectVision->ProcessFrame(frame)).then([this](KinectVisionLib::ProcessStats^ stats){
-            this->canvasBitmap = stats->GetDebugFrame()->GetBitmap(this->canvasResourceCreator);
+            this->canvasBitmap.SetData(stats->GetDebugFrame()->GetBitmap(this->canvasResourceCreator));
         });
     }
 }

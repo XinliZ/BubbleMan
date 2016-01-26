@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ThreadSafeBox.h"
+
 namespace KinectVision
 {
     ref class KinectManager sealed
@@ -22,7 +24,7 @@ namespace KinectVision
         WindowsPreview::Kinect::MultiSourceFrameReader^ multiSourceFrameReader;
 
         Microsoft::Graphics::Canvas::ICanvasResourceCreator^ canvasResourceCreator;
-        Microsoft::Graphics::Canvas::CanvasBitmap^ canvasBitmap;
+        ThreadSafeBox<Microsoft::Graphics::Canvas::CanvasBitmap^> canvasBitmap;
         KinectVisionLib::Frame^ currentFrame;
 
         Windows::Foundation::Collections::IVectorView<Windows::Storage::StorageFile^>^ fileList;
