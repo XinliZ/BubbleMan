@@ -125,14 +125,14 @@ namespace KinectVisionLib{
             }
 
             template<typename T1, typename T2, typename T3>
-            void ImageOperation(shared_ptr<Image<T1>> op1, shared_ptr<Image<T2>> op2, shared_ptr<Image<T3>> op3, function<void(T*, T1*, T2*, T3*)> operation)
+            void ImageOperation(shared_ptr<const Image<T1>> op1, shared_ptr<Image<T2>> op2, shared_ptr<Image<T3>> op3, function<void(T*, const T1*, T2*, T3*)> operation)
             {
                 assert(this->width == op1->GetWidth() && this->width == op2->GetWidth() && this->width == op3->GetWidth());
                 assert(this->height == op1->GetHeight() && this->height == op2->GetHeight() && this->height == op3->GetHeight());
                 for (int i = 0; i < GetHeight(); i++)
                 {
                     uint16* img = this->GetScan0() + i * this->GetStride();
-                    uint16* op1Scan = op1->GetScan0() + i * op1->GetStride();
+                    const uint16* op1Scan = op1->GetScan0() + i * op1->GetStride();
                     uint16* op2Scan = op2->GetScan0() + i * op2->GetStride();
                     uint16* op3Scan = op3->GetScan0() + i * op3->GetStride();
                     for (int j = 0; j < GetWidth(); j++)

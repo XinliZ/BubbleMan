@@ -10,7 +10,7 @@ Frame::Frame()
 {
 }
 
-Frame::Frame(std::shared_ptr<KinectVisionLib::Core::Image<uint16>> image)
+Frame::Frame(std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image)
 {
     this->image = image;
 }
@@ -38,7 +38,7 @@ void Frame::ForEachPixel(PixelOp^ action)
 {
     for (int i = 0; i < this->image->GetHeight(); i++)
     {
-        uint16* scan = this->image->GetScan0() + i * this->image->GetStride();
+        const uint16* scan = this->image->GetScan0() + i * this->image->GetStride();
         for (int j = 0; j < this->image->GetWidth(); j++)
         {
             action(j, i, *scan);
@@ -52,8 +52,8 @@ void Frame::ForEachInterPixel(InterPixelOp^ action)
 {
     for (int i = 0; i < this->image->GetHeight() - 1; i++)
     {
-        uint16* scan = this->image->GetScan0() + i * this->image->GetStride();
-        uint16* scan1 = this->image->GetScan0() + (i + 1) * this->image->GetStride();
+        const uint16* scan = this->image->GetScan0() + i * this->image->GetStride();
+        const uint16* scan1 = this->image->GetScan0() + (i + 1) * this->image->GetStride();
         for (int j = 0; j < this->image->GetWidth() - 1; j++)
         {
             action(j, i, *scan, *(scan + 1), *scan1, *(scan1 + 1));
@@ -78,7 +78,7 @@ void Frame::ForEachInterPixel(InterPixelOp^ action)
 //    }
 //}
 
-CanvasBitmap^ Frame::CreateBitmapFromBuffer(ICanvasResourceCreator^ canvas, std::shared_ptr<KinectVisionLib::Core::Image<uint16>> image)
+CanvasBitmap^ Frame::CreateBitmapFromBuffer(ICanvasResourceCreator^ canvas, std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image)
 {
     // RGBA buffer
     auto bitmapBuffer = ref new Array<byte>(image->GetWidth() * image->GetHeight() * 4);

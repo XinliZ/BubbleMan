@@ -11,9 +11,9 @@ namespace KinectVisionLib {
         public:
             ProcessContext() {}
 
-            void AddDebugFrame(const wstring& name, shared_ptr<Image<uint16>> debugFrame)
+            void AddDebugFrame(const wstring& name, shared_ptr<const Image<uint16>> debugFrame)
             {
-                debugFrames.insert(pair<wstring, shared_ptr<Image<uint16>>>(name, debugFrame));
+                debugFrames.insert(pair<wstring, shared_ptr<const Image<uint16>>>(name, debugFrame));
             }
 
             void Clear()
@@ -22,7 +22,7 @@ namespace KinectVisionLib {
             }
 
         public:
-            map<wstring, shared_ptr<Image<uint16>>> debugFrames;
+            map<wstring, shared_ptr<const Image<uint16>>> debugFrames;
         };
     }
 }

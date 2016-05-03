@@ -26,13 +26,13 @@ namespace KinectVisionLib
         property int LengthInPixel {int get(){ return image->GetWidth() * image->GetHeight(); }}
 
     private:
-        Microsoft::Graphics::Canvas::CanvasBitmap^ CreateBitmapFromBuffer(Microsoft::Graphics::Canvas::ICanvasResourceCreator^ canvas, std::shared_ptr<KinectVisionLib::Core::Image<uint16>> image);
+        Microsoft::Graphics::Canvas::CanvasBitmap^ CreateBitmapFromBuffer(Microsoft::Graphics::Canvas::ICanvasResourceCreator^ canvas, std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image);
 
     internal:
-        Frame(std::shared_ptr<KinectVisionLib::Core::Image<uint16>> image);
-        std::shared_ptr<KinectVisionLib::Core::DepthImage> GetImage() { return std::dynamic_pointer_cast<KinectVisionLib::Core::DepthImage>(this->image); }
+        Frame(std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image);
+        std::shared_ptr<const KinectVisionLib::Core::DepthImage> GetImage() { return std::dynamic_pointer_cast<const KinectVisionLib::Core::DepthImage>(this->image); }
 
     private:
-        std::shared_ptr<KinectVisionLib::Core::Image<uint16>> image;
+        std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image;
     };
 }

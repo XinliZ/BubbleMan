@@ -19,7 +19,7 @@ namespace KinectVisionLib{
             KinectVisionManager();
             ~KinectVisionManager();
 
-            shared_ptr<Image<uint16>> FeedFrame(shared_ptr<DepthImage> image)
+            shared_ptr<const Image<uint16>> FeedFrame(shared_ptr<const DepthImage> image)
             {
                 this->frameCount++;
                 this->context.Clear();
@@ -37,9 +37,9 @@ namespace KinectVisionLib{
         private:
             void UpdateBlackDotsMask(shared_ptr<DepthImage> image, shared_ptr<DepthImage> newImage);
 
-            shared_ptr<Image<uint16>> SegmentThenTracking(shared_ptr<DepthImage> image)
+            shared_ptr<const Image<uint16>> SegmentThenTracking(shared_ptr<const DepthImage> image)
             {
-                shared_ptr<Image<uint16>> result;
+                shared_ptr<const Image<uint16>> result;
                 // Build tracker list from segmentation results
                 // Update the tracker with new image
                 if (backgroundManager == nullptr)
