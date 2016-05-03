@@ -51,7 +51,8 @@ namespace KinectVisionLib{
                 else
                 {
                     auto backgroundImage = backgroundManager->Update(image);
-                    context.AddDebugFrame(L"Background", backgroundImage);
+                    context.AddDebugFrame(L"BackgroundDiff", backgroundImage);
+                    context.AddDebugFrame(L"Background", backgroundManager->GetAccumulatedBackground());
 
                     ImageSegmentation segment(10);
                     result = segment.SegmentImageWithMask(image, backgroundImage);

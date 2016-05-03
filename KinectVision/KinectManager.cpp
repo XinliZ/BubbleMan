@@ -246,9 +246,10 @@ void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
     {
         create_task(kinectVision->ProcessFrame(frame)).then([this](KinectVisionLib::ProcessStats^ stats){
             this->canvasBitmap0.SetData(stats->GetDebugFrame(nullptr)->GetBitmap(this->canvasResourceCreator));
-            if (stats->GetDebugFrame(L"Background") != nullptr)
+            auto farme1 = stats->GetDebugFrame(L"BackgroundDiff");
+            if (farme1 != nullptr)
             {
-                this->canvasBitmap1.SetData(stats->GetDebugFrame(L"Background")->GetBitmap(this->canvasResourceCreator));
+                this->canvasBitmap1.SetData(farme1->GetBitmap(this->canvasResourceCreator));
             }
         });
     }
