@@ -7,12 +7,15 @@ namespace KinectVisionLib
     public ref class ProcessStats sealed
     {
     public:
-        ProcessStats(Frame^ debugFrame);
+        ProcessStats(Frame^ resultFrame);
 
-        Frame^ GetDebugFrame();
+        void AddDebugFrame(Platform::String^ name, Frame^ debugFrame);
+
+        Frame^ GetDebugFrame(Platform::String^ name);
 
     private:
         int processTime;
-        Frame^ debugFrame;
+        std::map<Platform::String^, Frame^> debugFrames;
+        Frame^ resultFrame;
     };
 }

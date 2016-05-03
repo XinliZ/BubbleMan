@@ -24,7 +24,8 @@ namespace KinectVision
         WindowsPreview::Kinect::MultiSourceFrameReader^ multiSourceFrameReader;
 
         Microsoft::Graphics::Canvas::ICanvasResourceCreator^ canvasResourceCreator;
-        ThreadSafeBox<Microsoft::Graphics::Canvas::CanvasBitmap^> canvasBitmap;
+        ThreadSafeBox<Microsoft::Graphics::Canvas::CanvasBitmap^> canvasBitmap0;
+        ThreadSafeBox<Microsoft::Graphics::Canvas::CanvasBitmap^> canvasBitmap1;
         KinectVisionLib::Frame^ currentFrame;
 
         Windows::Foundation::Collections::IVectorView<Windows::Storage::StorageFile^>^ fileList;

@@ -6,6 +6,7 @@
 #include "Segmentation/ImageSegmentation.h"
 #include "Difference/BackgroundManager.h"
 #include "ChipTracker/ChipManager.h"
+#include "ProcessContext.h"
 
 namespace KinectVisionLib{
     namespace Core{
@@ -21,10 +22,16 @@ namespace KinectVisionLib{
             shared_ptr<Image<uint16>> FeedFrame(shared_ptr<DepthImage> image)
             {
                 this->frameCount++;
+                this->context.Clear();
 
                 //return SegmentEveryFrame(image);
                 return SegmentThenTracking(image);
                 //return ImageSubstraction(image);
+            }
+
+            ProcessContext* GetProcessContext()
+            {
+                return &context;
             }
 
         private:
@@ -44,6 +51,8 @@ namespace KinectVisionLib{
                 else
                 {
                     auto backgroundImage = backgroundManager->Update(image);
+                    context.AddDebugFrame(L"Background", backgroundImage);
+
                     ImageSegmentation segment(10);
                     result = segment.SegmentImageWithMask(image, backgroundImage);
 
@@ -127,6 +136,8 @@ namespace KinectVisionLib{
             shared_ptr<ChipManager> chipManager;
 
             int frameCount = 0;
+
+            ProcessContext context;
         };
 
     }

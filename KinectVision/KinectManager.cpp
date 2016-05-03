@@ -98,10 +98,15 @@ void KinectManager::LoadNextFrame()
 void KinectManager::RenderView(CanvasDrawingSession^ drawingSession)
 {
     // The input
-    ICanvasImage^ img = this->canvasBitmap.GetData();
-    if (img != nullptr)
+    ICanvasImage^ img0 = this->canvasBitmap0.GetData();
+    ICanvasImage^ img1 = this->canvasBitmap1.GetData();
+    if (img0 != nullptr)
     {
-        drawingSession->DrawImage(img);
+        drawingSession->DrawImage(img0);
+    }
+    if (img1 != nullptr)
+    {
+        drawingSession->DrawImage(img1, 0, 430);
     }
 }
 
@@ -235,12 +240,16 @@ void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
     bool DoNotProcessForDebugging = false;
     if (DoNotProcessForDebugging)
     {
-        this->canvasBitmap.SetData(frame->GetBitmap(this->canvasResourceCreator));
+        this->canvasBitmap0.SetData(frame->GetBitmap(this->canvasResourceCreator));
     }
     else
     {
         create_task(kinectVision->ProcessFrame(frame)).then([this](KinectVisionLib::ProcessStats^ stats){
-            this->canvasBitmap.SetData(stats->GetDebugFrame()->GetBitmap(this->canvasResourceCreator));
+            this->canvasBitmap0.SetData(stats->GetDebugFrame(nullptr)->GetBitmap(this->canvasResourceCreator));
+            if (stats->GetDebugFrame(L"Background") != nullptr)
+            {
+                this->canvasBitmap1.SetData(stats->GetDebugFrame(L"Background")->GetBitmap(this->canvasResourceCreator));
+            }
         });
     }
 }
