@@ -25,7 +25,7 @@ namespace KinectVisionLib{
                 return this->areaMap;
             }
 
-            shared_ptr<AreaMap> SegmentImageWithMask(shared_ptr<DepthImage> image, shared_ptr<DepthImage> mask)
+            shared_ptr<AreaMap> SegmentImageWithMask(shared_ptr<const DepthImage> image, shared_ptr<DepthImage> mask)
             {
                 this->image = image;
                 this->areaMap = make_shared<AreaMap>(image->GetWidth(), image->GetHeight());
@@ -199,7 +199,7 @@ namespace KinectVisionLib{
 
         private:
             deque<Point> seeds;
-            shared_ptr<DepthImage> image;
+            shared_ptr<const DepthImage> image;
             shared_ptr<AreaMap> areaMap;
 
 

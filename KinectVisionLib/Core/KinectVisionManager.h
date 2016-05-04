@@ -6,6 +6,7 @@
 #include "Segmentation/ImageSegmentation.h"
 #include "Difference/BackgroundManager.h"
 #include "ChipTracker/ChipManager.h"
+#include "ProcessContext.h"
 
 namespace KinectVisionLib{
     namespace Core{
@@ -18,21 +19,27 @@ namespace KinectVisionLib{
             KinectVisionManager();
             ~KinectVisionManager();
 
-            shared_ptr<Image<uint16>> FeedFrame(shared_ptr<DepthImage> image)
+            shared_ptr<const Image<uint16>> FeedFrame(shared_ptr<const DepthImage> image)
             {
                 this->frameCount++;
+                this->context.Clear();
 
                 //return SegmentEveryFrame(image);
                 return SegmentThenTracking(image);
                 //return ImageSubstraction(image);
             }
 
+            ProcessContext* GetProcessContext()
+            {
+                return &context;
+            }
+
         private:
             void UpdateBlackDotsMask(shared_ptr<DepthImage> image, shared_ptr<DepthImage> newImage);
 
-            shared_ptr<Image<uint16>> SegmentThenTracking(shared_ptr<DepthImage> image)
+            shared_ptr<const Image<uint16>> SegmentThenTracking(shared_ptr<const DepthImage> image)
             {
-                shared_ptr<Image<uint16>> result;
+                shared_ptr<const Image<uint16>> result;
                 // Build tracker list from segmentation results
                 // Update the tracker with new image
                 if (backgroundManager == nullptr)
@@ -44,6 +51,9 @@ namespace KinectVisionLib{
                 else
                 {
                     auto backgroundImage = backgroundManager->Update(image);
+                    context.AddDebugFrame(L"BackgroundDiff", backgroundImage);
+                    context.AddDebugFrame(L"Background", backgroundManager->GetAccumulatedBackground());
+
                     ImageSegmentation segment(10);
                     result = segment.SegmentImageWithMask(image, backgroundImage);
 
@@ -127,6 +137,8 @@ namespace KinectVisionLib{
             shared_ptr<ChipManager> chipManager;
 
             int frameCount = 0;
+
+            ProcessContext context;
         };
 
     }

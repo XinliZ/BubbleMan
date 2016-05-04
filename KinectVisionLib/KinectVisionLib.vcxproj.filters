@@ -113,6 +113,7 @@
     <ClInclude Include="Core\ChipTracker\ErrorMap.h">
       <Filter>Core\ChipTracker</Filter>
     </ClInclude>
+    <ClInclude Include="Core\ProcessContext.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
