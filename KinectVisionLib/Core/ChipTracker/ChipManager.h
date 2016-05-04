@@ -19,7 +19,7 @@ namespace KinectVisionLib
             {
             }
 
-            void Update(shared_ptr<DepthImage> depthFrame, shared_ptr<DepthImage> backgroundRemovedImage)
+            void Update(shared_ptr<const DepthImage> depthFrame, shared_ptr<DepthImage> backgroundRemovedImage)
             {
                 shared_ptr<AreaMap> areaMap = make_shared<AreaMap>(depthFrame->GetWidth(), depthFrame->GetHeight());
                 for (auto tracker : trackers)
@@ -40,7 +40,7 @@ namespace KinectVisionLib
             }
 
         private:
-            void DetectAndAddNewTrackers(std::list<shared_ptr<ChipTracker>> trackers, shared_ptr<DepthImage> depthFrame, shared_ptr<DepthImage> backgroundRemovedImage)
+            void DetectAndAddNewTrackers(std::list<shared_ptr<ChipTracker>> trackers, shared_ptr<const DepthImage> depthFrame, shared_ptr<DepthImage> backgroundRemovedImage)
             {
                 ImageSegmentation segment(10);
                 auto result = segment.SegmentImageWithMask(depthFrame, backgroundRemovedImage);

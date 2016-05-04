@@ -6,6 +6,7 @@
 #include "Segmentation/ImageSegmentation.h"
 #include "Difference/BackgroundManager.h"
 #include "ChipTracker/ChipManager.h"
+#include "ProcessContext.h"
 
 namespace KinectVisionLib{
     namespace Core{
@@ -18,22 +19,28 @@ namespace KinectVisionLib{
             KinectVisionManager();
             ~KinectVisionManager();
 
-            shared_ptr<Image<uint16>> FeedFrame(shared_ptr<DepthImage> image)
+            shared_ptr<const Image<uint16>> FeedFrame(shared_ptr<const DepthImage> image)
             {
                 this->frameCount++;
+                this->context.Clear();
 
-                //return SegmentThenTracking(image);
+                return SegmentThenTracking(image);
                 //return SegmentEveryFrame(image);
                 //return ImageSubstraction(image);
-                return SegmentWithBackground(image);
+                //return SegmentWithBackground(image);
+            }
+
+            ProcessContext* GetProcessContext()
+            {
+                return &context;
             }
 
         private:
             void UpdateBlackDotsMask(shared_ptr<DepthImage> image, shared_ptr<DepthImage> newImage);
 
-            shared_ptr<Image<uint16>> SegmentThenTracking(shared_ptr<DepthImage> image)
+            shared_ptr<const Image<uint16>> SegmentThenTracking(shared_ptr<const DepthImage> image)
             {
-                shared_ptr<Image<uint16>> result;
+                shared_ptr<const Image<uint16>> result;
                 // Build tracker list from segmentation results
                 // Update the tracker with new image
                 if (backgroundManager == nullptr)
@@ -45,17 +52,21 @@ namespace KinectVisionLib{
                 else
                 {
                     auto backgroundRemovedImage = backgroundManager->Update(image);
-                    this->chipManager.Update(image, backgroundRemovedImage);
-                    result = backgroundRemovedImage;
+                    context.AddDebugFrame(L"BackgroundDiff", backgroundRemovedImage);
+                    context.AddDebugFrame(L"Background", backgroundManager->GetAccumulatedBackground());
 
+                    ImageSegmentation segment(10);
+                    result = segment.SegmentImageWithMask(image, backgroundRemovedImage);
+
+                    this->chipManager.Update(image, backgroundRemovedImage);
                 }
                 return result;
             }
 
             // Do segmentation on each frame based on the background results
-            shared_ptr<Image<uint16>> SegmentWithBackground(shared_ptr<DepthImage> image)
+            shared_ptr<const Image<uint16>> SegmentWithBackground(shared_ptr<const DepthImage> image)
             {
-                shared_ptr<Image<uint16>> result;
+                shared_ptr<const Image<uint16>> result;
                 // Build tracker list from segmentation results
                 // Update the tracker with new image
                 if (backgroundManager == nullptr)
@@ -128,6 +139,8 @@ namespace KinectVisionLib{
             ChipManager chipManager;
 
             int frameCount = 0;
+
+            ProcessContext context;
         };
 
     }

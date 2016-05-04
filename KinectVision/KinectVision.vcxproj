@@ -98,6 +98,7 @@
     <ClInclude Include="Content\ShaderStructures.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Content\PointCloudRenderer.h" />
+    <ClInclude Include="ThreadSafeBox.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.xaml.cpp">

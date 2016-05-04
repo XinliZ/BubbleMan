@@ -24,7 +24,11 @@ Windows::Foundation::IAsyncOperation<ProcessStats^>^ KinectVision::ProcessFrame(
     return create_async([this, frame]() -> ProcessStats^ {
         auto result = manager.FeedFrame(frame->GetImage());
 
-        // TODO: The scanline0 may not be begin of buffer;
-        return ref new ProcessStats(ref new Frame(result), frame);
+        auto stats = ref new ProcessStats(ref new Frame(result));
+        for each (auto pair in manager.GetProcessContext()->debugFrames)
+        {
+            stats->AddDebugFrame(ref new Platform::String(pair.first.c_str()), ref new Frame(pair.second));
+        }
+        return stats;
     });
 }

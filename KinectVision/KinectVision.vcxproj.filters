@@ -70,6 +70,7 @@
     <ClInclude Include="Content\PointCloudRenderer.h">
       <Filter>Content</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadSafeBox.h" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />

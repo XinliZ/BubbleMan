@@ -5,7 +5,7 @@
 namespace KinectVisionLib
 {
     public delegate void PixelOp(int x, int y, uint16 depth);
-    public delegate void LineOp(uint16* scan, int y, int width);
+    public delegate void InterPixelOp(int x, int y, uint16 depth0, uint16 depth1, uint16 depth2, uint16 depth3);
 
     public ref class Frame sealed
     {
@@ -18,7 +18,7 @@ namespace KinectVisionLib
 
         Microsoft::Graphics::Canvas::CanvasBitmap^ GetBitmap(Microsoft::Graphics::Canvas::ICanvasResourceCreator^ canvas);
         void ForEachPixel(PixelOp^ action);
-        void ForEachLine(LineOp^ action);
+        void ForEachInterPixel(InterPixelOp^ action);
 
         property int Width {int get(){ return image->GetWidth(); }}
         property int Height {int get(){ return image->GetHeight(); }}
@@ -26,13 +26,13 @@ namespace KinectVisionLib
         property int LengthInPixel {int get(){ return image->GetWidth() * image->GetHeight(); }}
 
     private:
-        Microsoft::Graphics::Canvas::CanvasBitmap^ CreateBitmapFromBuffer(Microsoft::Graphics::Canvas::ICanvasResourceCreator^ canvas, std::shared_ptr<KinectVisionLib::Core::Image<uint16>> image);
+        Microsoft::Graphics::Canvas::CanvasBitmap^ CreateBitmapFromBuffer(Microsoft::Graphics::Canvas::ICanvasResourceCreator^ canvas, std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image);
 
     internal:
-        Frame(std::shared_ptr<KinectVisionLib::Core::Image<uint16>> image);
-        std::shared_ptr<KinectVisionLib::Core::DepthImage> GetImage() { return std::dynamic_pointer_cast<KinectVisionLib::Core::DepthImage>(this->image); }
+        Frame(std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image);
+        std::shared_ptr<const KinectVisionLib::Core::DepthImage> GetImage() { return std::dynamic_pointer_cast<const KinectVisionLib::Core::DepthImage>(this->image); }
 
     private:
-        std::shared_ptr<KinectVisionLib::Core::Image<uint16>> image;
+        std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image;
     };
 }

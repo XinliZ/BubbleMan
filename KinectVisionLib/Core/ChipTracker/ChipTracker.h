@@ -19,7 +19,7 @@ namespace KinectVisionLib
 
             int GetId() { return id; }
 
-            void UpdatePosition(shared_ptr<DepthImage> depthFrame)
+            void UpdatePosition(shared_ptr<const DepthImage> depthFrame)
             {
                 float score = 0.0;
                 this->chip = FindMatch(depthFrame, deltaMotionState, &score);
@@ -28,12 +28,12 @@ namespace KinectVisionLib
             bool IsActive() const { return isActive; }
 
         private:
-            shared_ptr<Chip> FindMatch(shared_ptr<DepthImage> depthImage, DeltaMotionState deltaMotionState, float* score)
+            shared_ptr<Chip> FindMatch(shared_ptr<const DepthImage> depthImage, DeltaMotionState deltaMotionState, float* score)
             {
                 return FindMatchWith12Ways(depthImage, deltaMotionState, score);
             }
 
-            shared_ptr<Chip> FindMatchWith12Ways(shared_ptr<DepthImage> depthImage, DeltaMotionState deltaMotionState, float* score)
+            shared_ptr<Chip> FindMatchWith12Ways(shared_ptr<const DepthImage> depthImage, DeltaMotionState deltaMotionState, float* score)
             {
                 // Iterate the search process
                 return nullptr;
