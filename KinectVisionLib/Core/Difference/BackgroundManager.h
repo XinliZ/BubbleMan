@@ -32,7 +32,7 @@ namespace KinectVisionLib
             {
                 float backgroundThreshold = 0.95f;        // TODO: Should make this a configuration value
                 shared_ptr<DepthImage> result = make_shared<DepthImage>(image->GetWidth(), image->GetHeight());
-                background->ImageOperation<uint16, uint16, uint16>(image, result, backgroundAccumulationMask, [backgroundThreshold](uint16* bgScan, const uint16* inputScan, uint16* resultScan, uint16* accumulationMaskScan) {
+                background->ImageOperation<uint16, uint16, uint16>(image.get(), result.get(), backgroundAccumulationMask.get(), [backgroundThreshold](uint16* bgScan, const uint16* inputScan, uint16* resultScan, uint16* accumulationMaskScan) {
                     if (*inputScan == 0)
                     {
                         // Ignore invalid input point

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Image.h"
+#include "ImageBuffer.h"
 #include "Rect.h"
 
 namespace KinectVisionLib
@@ -24,7 +25,7 @@ namespace KinectVisionLib
         public:
 
             template<typename T1>
-            void ImageOperation(shared_ptr<const Image<T1>> op1, const Rect& rect, function<void(T*, const T1*)> operation)
+            void ImageOperation(const Image<T1>* op1, const Rect& rect, function<void(T*, const T1*)> operation)
             {
                 assert(rect <= op1->GetSize());
                 
@@ -42,7 +43,7 @@ namespace KinectVisionLib
             }
 
             template<typename T1, typename T2>
-            void ImageOperation(shared_ptr<const Image<T1>> origin, shared_ptr<Image<T2>> target, function<void(const T*, const T1*, shared_ptr<Image<T2>> target)> operation) const
+            void ImageOperation(const Image<T1>* origin, ImageBuffer<T2>* target, function<void(const T*, const T1*, int x, int y, ImageBuffer<T2>* target)> operation) const
             {
                 assert(boundingBox <= origin->GetSize());
 
@@ -52,7 +53,7 @@ namespace KinectVisionLib
                     const T1* originScan = origin->GetScan0() + (i + boundingBox.GetTop()) * origin->GetStride() + boundingBox.GetLeft();
                     for (int j = 0; j < GetWidth(); j++)
                     {
-                        operation(maskScan, originScan, target);
+                        operation(maskScan, originScan, j, i, target);
 
                         maskScan++;
                         originScan++;

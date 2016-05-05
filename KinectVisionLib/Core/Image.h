@@ -21,7 +21,7 @@ namespace KinectVisionLib{
                 ZeroMemory(this->buffer, this->length);
             }
 
-            Image(Size size)
+            Image(const Size& size)
                 : Image(size.GetWidth(), size.GetHeight())
             {}
 
@@ -119,14 +119,14 @@ namespace KinectVisionLib{
             }
 
             template<typename T1, typename T2>
-            void ImageOperation(shared_ptr<Image<T1>> op1, shared_ptr<Image<T2>> op2, function<void(T*, T1*, T2*)> operation)
+            void ImageOperation(const Image<T1>* op1, Image<T2>* op2, function<void(const T*, const T1*, T2*)> operation) const
             {
                 assert(this->width == op1->GetWidth() && this->width == op2->GetWidth());
                 assert(this->height == op1->GetHeight() && this->height == op2->GetHeight());
                 for (int i = 0; i < GetHeight(); i++)
                 {
-                    T* img = this->GetScan0() + i * this->GetStride();
-                    T1* op1Scan = op1->GetScan0() + i * op1->GetStride();
+                    const T* img = this->GetScan0() + i * this->GetStride();
+                    const T1* op1Scan = op1->GetScan0() + i * op1->GetStride();
                     T2* op2Scan = op2->GetScan0() + i * op2->GetStride();
                     for (int j = 0; j < GetWidth(); j++)
                     {
@@ -139,7 +139,7 @@ namespace KinectVisionLib{
             }
 
             template<typename T1, typename T2, typename T3>
-            void ImageOperation(shared_ptr<const Image<T1>> op1, shared_ptr<Image<T2>> op2, shared_ptr<Image<T3>> op3, function<void(T*, const T1*, T2*, T3*)> operation)
+            void ImageOperation(const Image<T1>* op1, Image<T2>* op2, Image<T3>* op3, function<void(T*, const T1*, T2*, T3*)> operation)
             {
                 assert(this->width == op1->GetWidth() && this->width == op2->GetWidth() && this->width == op3->GetWidth());
                 assert(this->height == op1->GetHeight() && this->height == op2->GetHeight() && this->height == op3->GetHeight());
@@ -161,7 +161,7 @@ namespace KinectVisionLib{
             }
 
             template<typename T1>
-            void ImageOperation(shared_ptr<const Image<T1>> op1, function<void(T*, const T1*)> operation)
+            void ImageOperation(const Image<T1>* op1, function<void(T*, const T1*)> operation)
             {
                 assert(GetWidth() == op1->GetWidth());
                 assert(GetHeight() == op1->GetHeight());

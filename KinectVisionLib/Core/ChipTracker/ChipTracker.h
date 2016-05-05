@@ -13,13 +13,16 @@ namespace KinectVisionLib
         class ChipTracker
         {
         public:
-            ChipTracker(int id, shared_ptr<const AreaMap> map, uint16 areaCode)
+            ChipTracker(int id, shared_ptr<const DepthImage> depthFrame, shared_ptr<const AreaMap> areaMap, uint16 areaCode)
                 : id(id)
+                , chip(make_shared<Chip>(depthFrame, areaMap, areaCode))
+                , isActive(true)
             {
-                map->GetRect(areaCode);
             }
 
-            int GetId() { return id; }
+            int GetId() const { return id; }
+
+            bool IsActive() const { return isActive; }
 
             void UpdatePosition(shared_ptr<const DepthImage> depthFrame)
             {
@@ -27,13 +30,12 @@ namespace KinectVisionLib
                 this->chip = FindMatch(depthFrame, deltaMotionState, &score);
             }
 
-            bool IsActive() const { return isActive; }
-
             // TODO: Implementation needed
             // We could use bounding box here to match
             bool Matches(const Rect& area) const { return false; }
 
         private:
+
             shared_ptr<Chip> FindMatch(shared_ptr<const DepthImage> depthImage, DeltaMotionState deltaMotionState, float* score)
             {
                 const int maxIteration = 10;
@@ -60,6 +62,7 @@ namespace KinectVisionLib
                 // Iterate the search process
                 return nullptr;
             }
+
             shared_ptr<const ErrorMap> Match(shared_ptr<Chip> chip, shared_ptr<const DepthImage> depthFrame, DeltaMotionState& deltaMotionState)
             {
                 return chip->Match(depthFrame, deltaMotionState);
@@ -71,7 +74,8 @@ namespace KinectVisionLib
 
         private:
             int id;
-            shared_ptr<Chip> chip;
+            shared_ptr<Chip> chip;      // TODO: Should tracker keep a list of chips?
+
             MotionState motionState;
             DeltaMotionState deltaMotionState;
 

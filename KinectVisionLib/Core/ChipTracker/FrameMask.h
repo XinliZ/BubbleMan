@@ -12,7 +12,7 @@ namespace KinectVisionLib
             FrameMask(shared_ptr<const AreaMap> areaMap, uint16 areaCode)
                 : LocalImage<bool>(areaMap->GetRect(areaCode))
             {
-                ImageOperation<uint16>(areaMap, areaMap->GetRect(areaCode), [areaCode](bool* pixel, const uint16* source) {
+                ImageOperation<uint16>(areaMap.get(), areaMap->GetRect(areaCode), [areaCode](bool* pixel, const uint16* source) {
                     *pixel = (*source == areaCode) ? true : false;
                 });
             }

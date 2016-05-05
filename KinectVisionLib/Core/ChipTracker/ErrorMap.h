@@ -9,8 +9,8 @@ namespace KinectVisionLib
         class ErrorMap : public Image<int16>
         {
         public:
-            ErrorMap(int width, int height)
-                : Image<int16>(width, height)
+            ErrorMap(const Size& size)
+                : Image<int16>(size)
             {
             }
 
