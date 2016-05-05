@@ -9,8 +9,8 @@ namespace KinectVisionLib
         private:
             uint64 data;
             struct {
-                int x;
-                int y;
+                int32 x;
+                int32 y;
             };
 
         public:
@@ -21,8 +21,7 @@ namespace KinectVisionLib
             }
             Point(const Point& point)
             {
-                this->x = point.x;
-                this->y = point.y;
+                this->data = point.data;
             }
 
             int GetX() const { return x; }

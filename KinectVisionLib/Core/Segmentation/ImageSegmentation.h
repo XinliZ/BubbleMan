@@ -97,7 +97,7 @@ namespace KinectVisionLib{
 
             void GrowArea(Point point, shared_ptr<DepthImage> mask)
             {
-                uint16 areaCode = areaMap->CreateNewAreaCode();
+                uint16 areaCode = areaMap->CreateNewAreaCode(point);
 
                 GrowArea(point, areaCode, mask);
             }
@@ -117,7 +117,7 @@ namespace KinectVisionLib{
                     growingSeeds.pop_front();
 
                     // Leave 1 pixel edge to make sure the pixel read/write safe
-                    if (imageRect.IsInside(seed))
+                    if (imageRect.Contains(seed))
                     {
                         areaPixelCount++;
                         if (mask->GetPixel(seed) == 0)
@@ -162,7 +162,7 @@ namespace KinectVisionLib{
                     // TODO: In the future, we should consider the partial differential segmentation on a 5x5 patch
                     if (abs(pixelValues[0] - pixelValues[1]) < borderThreshold)
                     {
-                        areaMap->SetPixel(point, areaCode);
+                        areaMap->SetAreaCode(point, areaCode);
                         growingSeeds.push_back(point);
                     }
                 }
@@ -174,7 +174,7 @@ namespace KinectVisionLib{
                 {
                     if (abs(pixelValues[0] - pixelValues[2]) < borderThreshold)
                     {
-                        areaMap->SetPixel(point, areaCode);
+                        areaMap->SetAreaCode(point, areaCode);
                         growingSeeds.push_back(point);
                     }
                 }
@@ -186,7 +186,7 @@ namespace KinectVisionLib{
                 {
                     if (abs(pixelValues[0] - pixelValues[3]) < borderThreshold)
                     {
-                        areaMap->SetPixel(point, areaCode);
+                        areaMap->SetAreaCode(point, areaCode);
                         growingSeeds.push_back(point);
                     }
                 }
@@ -198,7 +198,7 @@ namespace KinectVisionLib{
                 {
                     if (abs(pixelValues[0] - pixelValues[4]) < borderThreshold)
                     {
-                        areaMap->SetPixel(point, areaCode);
+                        areaMap->SetAreaCode(point, areaCode);
                         growingSeeds.push_back(point);
                     }
                 }

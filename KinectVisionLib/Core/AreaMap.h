@@ -11,18 +11,22 @@ namespace KinectVisionLib{
         public:
             AreaMap(int width, int height)
                 : Image<uint16>(width, height)
-            {}
+            {
+                this->boundingBoxes.push_back(Rect(0, 0, 0, 0));       // The invalid place holder to fill up [0]
+            }
             ~AreaMap()
             {}
 
             void SetAreaCode(Point point, uint16 areaCode)
             {
+                this->boundingBoxes[areaCode] = this->boundingBoxes[areaCode].Extend(point);
                 SetPixel(point, areaCode);
             }
 
             // TODO: could we exceed the value range of uint16 for the area code?
-            uint16 CreateNewAreaCode()
+            uint16 CreateNewAreaCode(Point initialPoint)
             {
+                this->boundingBoxes.push_back(Rect(initialPoint, Size(1, 1)));
                 return maxAreaCode++;
             }
 
@@ -65,6 +69,11 @@ namespace KinectVisionLib{
                 }
             }
 
+            const uint16 GetAreaCount() const { return maxAreaCode; }
+            const Rect& GetRect(uint16 areaCode) const
+            {
+                return boundingBoxes[areaCode];
+            }
             
 
         private:
@@ -78,7 +87,7 @@ namespace KinectVisionLib{
 
         private:
             uint16 maxAreaCode = 1;        // Leave 0 as invalid value
-            deque<Point> growingSeeds;
+            vector<Rect> boundingBoxes;
         };
     }
 }

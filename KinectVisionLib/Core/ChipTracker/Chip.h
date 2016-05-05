@@ -14,14 +14,17 @@ namespace KinectVisionLib
         class Chip
         {
         public:
-            Chip()
-                : mask(Rect(0, 0, 0, 0))        // TODO: Fix this
+            Chip(shared_ptr<const DepthImage> depthImage, shared_ptr<const AreaMap> areaMap, uint16 areaCode)
+                : mask(areaMap, areaCode)
                 , center(0, 0, 0)
-            {}
+                , frame(depthImage)
+            {
+            }
 
             //Chip* FindMatch(Frame* frame, MotionState* motionState, float64* score);
-            shared_ptr<ErrorMap> Match(shared_ptr<DepthImage> depthFrame, DeltaMotionState& deltaMotionState)
+            shared_ptr<const ErrorMap> Match(shared_ptr<const DepthImage> depthFrame, DeltaMotionState& deltaMotionState)
             {
+                shared_ptr<ErrorMap> errorMap = make_shared<ErrorMap>(mask.GetWidth(), mask.GetHeight());
                 const int centerX = frame->GetWidth() / 2;
                 const int centerY = frame->GetHeight() / 2;
                 for (int i = 0; i < frame->GetHeight(); i++)
@@ -37,10 +40,11 @@ namespace KinectVisionLib
                         }
                     }
                 }
+                return errorMap;
             }
 
         private:
-            shared_ptr<DepthImage> frame;
+            shared_ptr<const DepthImage> frame;
             FrameMask mask;
             DepthPixel center;
 

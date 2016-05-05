@@ -4,7 +4,7 @@ namespace KinectVisionLib
 {
     namespace Core
     {
-        class Size
+        union Size
         {
         public:
             Size(int width, int height)
@@ -15,16 +15,21 @@ namespace KinectVisionLib
 
             Size(const Size& size)
             {
-                this->width = size.width;
-                this->height = size.width;
+                this->data = size.data;
             }
 
             int GetWidth() const { return width; }
             int GetHeight() const { return height; }
+            bool operator > (Size& size) const { return this->width > size.width && this->height > size.height; }
+            bool operator < (Size& size) const { return this->width < size.width && this->height < size.height; }
+            bool operator == (Size& size) const { return this->data == size.data; }
 
         private:
-            int width;
-            int height;
+            uint64 data;
+            struct {
+                int32 width;
+                int32 height;
+            };
         };
     }
 }

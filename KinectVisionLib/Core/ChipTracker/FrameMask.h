@@ -1,17 +1,21 @@
 #pragma once
 
-#include "../Image.h"
+#include "../LocalImage.h"
 
 namespace KinectVisionLib
 {
     namespace Core
     {
-        class FrameMask : public Image<bool>
+        class FrameMask : public LocalImage<bool>
         {
         public:
-            FrameMask(Rect rect)
-                : Image<bool>(rect.GetSize()), boundingBox(rect)
-            {}
+            FrameMask(shared_ptr<const AreaMap> areaMap, uint16 areaCode)
+                : LocalImage<bool>(areaMap->GetRect(areaCode))
+            {
+                ImageOperation<uint16>(areaMap, areaMap->GetRect(areaCode), [areaCode](bool* pixel, const uint16* source) {
+                    *pixel = (*source == areaCode) ? true : false;
+                });
+            }
 
             virtual void ToDisplay(uint8* buffer) const
             {
@@ -20,10 +24,8 @@ namespace KinectVisionLib
 
             bool IsPixelValid(Point point)
             {
-                return boundingBox.IsInside(point) ? GetPixel(point.Offset(boundingBox.GetOffset())) : false;
+                return GetBoundingBox().Contains(point) ? GetPixel(point.Offset(GetBoundingBox().GetOffset())) : false;
             }
-        private:
-            Rect boundingBox;
         };
 
     }

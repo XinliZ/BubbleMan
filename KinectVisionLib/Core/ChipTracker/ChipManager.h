@@ -43,17 +43,16 @@ namespace KinectVisionLib
             void DetectAndAddNewTrackers(std::list<shared_ptr<ChipTracker>> trackers, shared_ptr<const DepthImage> depthFrame, shared_ptr<DepthImage> backgroundRemovedImage)
             {
                 ImageSegmentation segment(10);
-                auto result = segment.SegmentImageWithMask(depthFrame, backgroundRemovedImage);
+                auto areaMap = segment.SegmentImageWithMask(depthFrame, backgroundRemovedImage);
                 std::list<shared_ptr<ChipTracker>> newTrackers;
                 
-                // TODO: To be finished
-                //for (auto area : result.GetAreaList())
-                //{
-                //    if (none_of(trackers.begin(), trackers.end(), [](ChipTracker tracker){ tracker.Matches(area); }))
-                //    {
-                //        newTrackers.push_back(make_shared<ChipTracker>(idSeed++));      // TODO: We will also need the region
-                //    }
-                //}
+                for (int areaCode = 1 /*areaCode 0 is preserved*/; areaCode < areaMap->GetAreaCount(); areaCode++)
+                {
+                    if (none_of(trackers.begin(), trackers.end(), [areaMap, areaCode](shared_ptr<ChipTracker> tracker){ return tracker->Matches(areaMap->GetRect(areaCode));}))
+                    {
+                        newTrackers.push_back(make_shared<ChipTracker>(idSeed++, areaMap, areaCode));      // TODO: We will also need the region
+                    }
+                }
             }
 
         private:

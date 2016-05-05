@@ -13,9 +13,11 @@ namespace KinectVisionLib
         class ChipTracker
         {
         public:
-            ChipTracker(int id)
+            ChipTracker(int id, shared_ptr<const AreaMap> map, uint16 areaCode)
                 : id(id)
-            {}
+            {
+                map->GetRect(areaCode);
+            }
 
             int GetId() { return id; }
 
@@ -27,18 +29,38 @@ namespace KinectVisionLib
 
             bool IsActive() const { return isActive; }
 
+            // TODO: Implementation needed
+            // We could use bounding box here to match
+            bool Matches(const Rect& area) const { return false; }
+
         private:
             shared_ptr<Chip> FindMatch(shared_ptr<const DepthImage> depthImage, DeltaMotionState deltaMotionState, float* score)
             {
-                return FindMatchWith12Ways(depthImage, deltaMotionState, score);
+                const int maxIteration = 10;
+                const float iterationThreshold = 30.0f;
+                for (int i = 0; i < maxIteration; i++)
+                {
+                    auto errorMap = Match(chip, depthImage, deltaMotionState);
+                    if (errorMap->GetScore() < iterationThreshold)
+                    {
+                        // Matching succeeded
+                        break;
+                    }
+                    else
+                    {
+                        // TODO: Refine the parameters based on the errorMap and match again
+                    }
+                }
+                // TODO: After the alignment, we will need segmentation in the area
+                return make_shared<Chip>(depthImage, shared_ptr<AreaMap>(), 0); // TODO: Fill up the parameters
             }
 
-            shared_ptr<Chip> FindMatchWith12Ways(shared_ptr<const DepthImage> depthImage, DeltaMotionState deltaMotionState, float* score)
+            shared_ptr<Chip> FindMatchWith12Ways(shared_ptr<const DepthImage> depthImage, DeltaMotionState& deltaMotionState, float* score)
             {
                 // Iterate the search process
                 return nullptr;
             }
-            shared_ptr<ErrorMap> Match(shared_ptr<Chip> chip, shared_ptr<DepthImage> depthFrame, DeltaMotionState deltaMotionState)
+            shared_ptr<const ErrorMap> Match(shared_ptr<Chip> chip, shared_ptr<const DepthImage> depthFrame, DeltaMotionState& deltaMotionState)
             {
                 return chip->Match(depthFrame, deltaMotionState);
             }

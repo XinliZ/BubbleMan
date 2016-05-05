@@ -110,13 +110,11 @@
     <ClInclude Include="Core\ChipTracker\ErrorMap.h">
       <Filter>Core\ChipTracker</Filter>
     </ClInclude>
-
     <ClInclude Include="Vector3.h">
       <Filter>Core</Filter>
     </ClInclude>
-
     <ClInclude Include="Core\ProcessContext.h" />
-
+    <ClInclude Include="Core\LocalImage.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
