@@ -23,13 +23,24 @@ namespace KinectVisionLib
             }
 
             //Chip* FindMatch(Frame* frame, MotionState* motionState, float64* score);
-            shared_ptr<const ErrorMap> Match(shared_ptr<const DepthImage> depthFrame, DeltaMotionState& deltaMotionState)
+            shared_ptr<const ErrorMap> Match(shared_ptr<const DepthImage> depthFrame, const DeltaMotionState& deltaMotionState) const
+            {
+                ImageBuffer<uint16> targetImage(depthFrame->GetSize());
+                TransformImage(frame, &mask, deltaMotionState, &targetImage);
+
+                shared_ptr<ErrorMap> errorMap = make_shared<ErrorMap>(depthFrame->GetSize());
+                depthFrame->ImageOperation<uint16, int16>(&targetImage, errorMap.get(), [](const uint16* inputScan, const uint16* resultScan, int16* errorScan) {
+                    *errorScan = *inputScan - *resultScan;
+                });
+                return errorMap;
+            }
+
+            void TransformImage(shared_ptr<const DepthImage> frame, const FrameMask* mask, const DeltaMotionState& deltaMotionState, ImageBuffer<uint16>* targetImage) const
             {
                 const int centerX = frame->GetWidth() / 2;
                 const int centerY = frame->GetHeight() / 2;
 
-                ImageBuffer<uint16> targetImage(depthFrame->GetSize());
-                mask.ImageOperation<uint16, uint16>(frame.get(), &targetImage, [centerX, centerY, &deltaMotionState, this](const bool* maskScan, const uint16* originScan, int x, int y, ImageBuffer<uint16>* target) {
+                mask->ImageOperation<uint16, uint16>(frame.get(), targetImage, [centerX, centerY, &deltaMotionState, this](const bool* maskScan, const uint16* originScan, int x, int y, ImageBuffer<uint16>* target) {
                     if (*maskScan)
                     {
                         DepthPixel outPixel = deltaMotionState.TransformDepthPixel(this->center, DepthPixel(x - centerX, y - centerY, *originScan));
@@ -40,12 +51,6 @@ namespace KinectVisionLib
                         }
                     }
                 });
-
-                shared_ptr<ErrorMap> errorMap = make_shared<ErrorMap>(depthFrame->GetSize());
-                depthFrame->ImageOperation<uint16, int16>(&targetImage, errorMap.get(), [](const uint16* inputScan, const uint16* resultScan, int16* errorScan) {
-                    *errorScan = *inputScan - *resultScan;
-                });
-                return errorMap;
             }
 
         private:

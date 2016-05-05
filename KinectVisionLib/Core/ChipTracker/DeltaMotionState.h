@@ -23,7 +23,7 @@ namespace KinectVisionLib
                     motionState.GetPitch() + dPitch);
             }
 
-            DepthPixel TransformDepthPixel(const DepthPixel& center, const DepthPixel& pixel)
+            DepthPixel TransformDepthPixel(const DepthPixel& center, const DepthPixel& pixel) const
             {
                 auto vector = pixel.ToVector3() - center.ToVector3();
                 return vector.RotateTranslate(dRoll, dYaw, dPitch, dX, dY, dZ);
