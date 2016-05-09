@@ -39,6 +39,14 @@ namespace KinectVisionLib
                 return offset.GetX() >= 0 && offset.GetY() >= 0 && GetRight() <= size.GetWidth() && GetBottom() <= size.GetHeight();
             }
 
+            bool OverlapWith(const Rect& rect) const
+            {
+                return Contains(rect.offset) || 
+                    Contains(Point(rect.GetLeft(), rect.GetBottom())) || 
+                    Contains(Point(rect.GetRight(), rect.GetBottom())) || 
+                    Contains(Point(rect.GetRight(), rect.GetTop()));
+            }
+
             // Extend the rect on all directions
             Rect Extend(int dLeft, int dTop, int dRight, int dButtom) const 
             { 

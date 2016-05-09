@@ -16,7 +16,7 @@ namespace KinectVisionLib{
                 this->width = width;
                 this->height = height;
                 this->stride = width;
-                this->length = width * height * 2;
+                this->length = width * height * sizeof(T);
                 this->buffer = new T[width * height];
                 ZeroMemory(this->buffer, this->length);
             }
@@ -45,7 +45,7 @@ namespace KinectVisionLib{
 
             ~Image()
             {
-                delete this->buffer;
+                delete[] this->buffer;
                 this->buffer = nullptr;
             }
 

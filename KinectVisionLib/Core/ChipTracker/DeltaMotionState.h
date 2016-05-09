@@ -34,6 +34,13 @@ namespace KinectVisionLib
             //    //return MotionState(motionState.X + dx, motionState.Y + dY)
             //}
 
+            void Translate(float dx, float dy, float dz)
+            {
+                dX += dx;
+                dY += dy;
+                dZ += dz;
+            }
+
         private:
             float dX;
             float dY;

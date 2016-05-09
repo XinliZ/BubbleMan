@@ -23,16 +23,17 @@ namespace KinectVisionLib
             }
 
             //Chip* FindMatch(Frame* frame, MotionState* motionState, float64* score);
-            shared_ptr<const ErrorMap> Match(shared_ptr<const DepthImage> depthFrame, const DeltaMotionState& deltaMotionState) const
+            void Match(shared_ptr<const DepthImage> depthFrame, const DeltaMotionState& deltaMotionState, ErrorMap& errorMap) const
             {
                 ImageBuffer<uint16> targetImage(depthFrame->GetSize());
                 TransformImage(frame, &mask, deltaMotionState, &targetImage);
 
-                shared_ptr<ErrorMap> errorMap = make_shared<ErrorMap>(depthFrame->GetSize());
-                depthFrame->ImageOperation<uint16, int16>(&targetImage, errorMap.get(), [](const uint16* inputScan, const uint16* resultScan, int16* errorScan) {
-                    *errorScan = *inputScan - *resultScan;
+                depthFrame->ImageOperation<uint16, int16>(&targetImage, &errorMap, [](const uint16* inputScan, const uint16* transformedScan, int16* errorScan) {
+                    if (*transformedScan != 0)
+                    {
+                        *errorScan = *inputScan - *transformedScan;
+                    }
                 });
-                return errorMap;
             }
 
             void TransformImage(shared_ptr<const DepthImage> frame, const FrameMask* mask, const DeltaMotionState& deltaMotionState, ImageBuffer<uint16>* targetImage) const
@@ -44,13 +45,21 @@ namespace KinectVisionLib
                     if (*maskScan)
                     {
                         DepthPixel outPixel = deltaMotionState.TransformDepthPixel(this->center, DepthPixel(x - centerX, y - centerY, *originScan));
-                        auto pixel = target->GetPixel(Point(outPixel.GetX(), outPixel.GetY()));
-                        if (pixel == 0 || pixel < outPixel.GetDepth())
+                        if (target->GetRect().Contains(Point(outPixel.GetX(), outPixel.GetY())))
                         {
-                            target->SetPixel(Point(outPixel.GetX(), outPixel.GetY()), outPixel.GetDepth());
+                            auto pixel = target->GetPixel(Point(outPixel.GetX(), outPixel.GetY()));
+                            if (pixel == 0 || pixel < outPixel.GetDepth())
+                            {
+                                target->SetPixel(Point(outPixel.GetX(), outPixel.GetY()), outPixel.GetDepth());
+                            }
                         }
                     }
                 });
+            }
+
+            const Rect& GetRect() const
+            {
+                return mask.GetBoundingBox();
             }
 
         private:

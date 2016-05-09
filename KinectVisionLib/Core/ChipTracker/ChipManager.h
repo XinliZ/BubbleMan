@@ -21,40 +21,33 @@ namespace KinectVisionLib
 
             void Update(shared_ptr<const DepthImage> depthFrame, shared_ptr<DepthImage> backgroundRemovedImage)
             {
-                // TODO: Figure out whether we want to do segmentation for each frame
-                shared_ptr<AreaMap> areaMap = make_shared<AreaMap>(depthFrame->GetWidth(), depthFrame->GetHeight());
-                for (auto tracker : trackers)
+                ImageSegmentation segment(10);
+                auto areaMap = segment.SegmentImageWithMask(depthFrame, backgroundRemovedImage);
+                list<shared_ptr<ChipTracker>> newTracker;
+                for (int areaCode = 1; areaCode < areaMap->GetAreaCount(); areaCode++)
                 {
-                    if (tracker->IsActive())
+                    bool foundMatching = false;
+                    for (auto tracker : trackers)
                     {
-                        tracker->UpdatePosition(depthFrame);
-                        //areaMap->Mark(tracker);
+                        // TODO: Here is only the rough matching. We have to drill into more details when there are
+                        // multiple matching areas
+                        if (tracker->Matches(areaMap->GetRect(areaCode)))
+                        {
+                            foundMatching = true;
+                            tracker->UpdatePosition(depthFrame, areaMap, areaCode);
+                        }
+                    }
+                    if (!foundMatching)
+                    {
+                        newTracker.push_back(make_shared<ChipTracker>(idSeed++, depthFrame, areaMap, areaCode));
                     }
                 }
-                
-                DetectAndAddNewTrackers(trackers, depthFrame, backgroundRemovedImage);
+                trackers.insert(trackers.end(), newTracker.begin(), newTracker.end());
             }
 
             const std::list<shared_ptr<ChipTracker>> GetTrackers() const
             {
                 return this->trackers;
-            }
-
-        private:
-
-            void DetectAndAddNewTrackers(std::list<shared_ptr<ChipTracker>> trackers, shared_ptr<const DepthImage> depthFrame, shared_ptr<DepthImage> backgroundRemovedImage)
-            {
-                ImageSegmentation segment(10);
-                auto areaMap = segment.SegmentImageWithMask(depthFrame, backgroundRemovedImage);
-                std::list<shared_ptr<ChipTracker>> newTrackers;
-                
-                for (int areaCode = 1 /*areaCode 0 is preserved*/; areaCode < areaMap->GetAreaCount(); areaCode++)
-                {
-                    if (none_of(trackers.begin(), trackers.end(), [areaMap, areaCode](shared_ptr<ChipTracker> tracker){ return tracker->Matches(areaMap->GetRect(areaCode));}))
-                    {
-                        newTrackers.push_back(make_shared<ChipTracker>(idSeed++, depthFrame, areaMap, areaCode));      // TODO: We will also need the region
-                    }
-                }
             }
 
         private:

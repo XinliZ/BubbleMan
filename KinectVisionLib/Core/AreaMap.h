@@ -72,6 +72,7 @@ namespace KinectVisionLib{
             const uint16 GetAreaCount() const { return maxAreaCode; }
             const Rect& GetRect(uint16 areaCode) const
             {
+                assert(areaCode < maxAreaCode && areaCode > 0);
                 return boundingBoxes[areaCode];
             }
             

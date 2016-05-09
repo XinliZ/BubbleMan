@@ -14,13 +14,35 @@ namespace KinectVisionLib
             {
             }
 
-            float GetScore() const
+            virtual void ToDisplay(uint8* buffer) const override {}
+
+        public:
+            float AnalyzeResult()
             {
-                // TODO: Implementation needed
+                // Histogram and binarization
+                //for ()
                 return 0.0f;
             }
 
-            virtual void ToDisplay(uint8* buffer) const override {}
+            float TestXDirection() const
+            {
+                //for (int i = 0; i < )
+                return 0.0f;
+            }
+
+            float TestYDirection() const
+            {
+                return 0.0f;
+            }
+
+            float TestZDirection() const
+            {
+                // Test zoom in/out
+                return 0.0f;
+            }
+
+        private:
+            //Rect area;
         };
     }
 }
