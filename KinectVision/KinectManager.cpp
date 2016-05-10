@@ -80,8 +80,18 @@ void KinectManager::LoadNextFrame()
         this->frameNumber = 0;
     }
 
-    auto file = this->fileList->GetAt(frameNumber);
-    frameNumber++;
+    bool skippingFiles = true;
+    StorageFile^ file;
+    while (skippingFiles && this->frameNumber < this->fileList->Size)
+    {
+        file = this->fileList->GetAt(frameNumber);
+        frameNumber++;
+        if (String::CompareOrdinal(file->Name, L"ColorImage") < 0 || String::CompareOrdinal(file->Name, L"ColorImageA") >= 0)
+        {
+            // Only pass the file name doesn't match ColorImage000XX.png
+            skippingFiles = false;
+        }
+    }
     if (file == nullptr)
     {
         throw ref new InvalidArgumentException("The file from list is not valid.");
@@ -235,7 +245,7 @@ KinectVisionLib::Frame^ KinectManager::BuildFrameFromDepthFrame(DepthFrame^ dept
 
 void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
 {
-    bool DoNotProcessForDebugging = false;
+    bool DoNotProcessForDebugging = true;
     if (DoNotProcessForDebugging)
     {
         this->canvasBitmap0.SetData(frame->GetBitmap(this->canvasResourceCreator));
@@ -251,6 +261,16 @@ void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
             {
                 this->canvasBitmap1.SetData(farme1->GetBitmap(this->canvasResourceCreator));
             }
+        });
+    }
+}
+
+void KinectManager::ProcessImage(float dX, float dY, float dZ, float dA, float dB, float dR)
+{
+    if (this->currentFrame != nullptr)
+    {
+        create_task(kinectVision->TransformFrame(this->currentFrame, dX, dY, dZ, dA, dB, dR)).then([this](KinectVisionLib::Frame^ result) {
+            this->currentFrame = result;
         });
     }
 }

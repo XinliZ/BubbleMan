@@ -30,7 +30,7 @@ namespace KinectVisionLib
 
     internal:
         Frame(std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image);
-        std::shared_ptr<const KinectVisionLib::Core::DepthImage> GetImage() { return std::dynamic_pointer_cast<const KinectVisionLib::Core::DepthImage>(this->image); }
+        std::shared_ptr<const KinectVisionLib::Core::DepthImage> GetImage() const { return std::dynamic_pointer_cast<const KinectVisionLib::Core::DepthImage>(this->image); }
 
     private:
         std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image;

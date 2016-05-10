@@ -12,6 +12,10 @@ namespace KinectVisionLib{
                 : Image<uint16>(width, height)
             {}
 
+            DepthImage(const Size& size)
+                : Image<uint16>(size)
+            {}
+
             DepthImage(uint16* buffer, int width, int height)
                 : Image<uint16>(width, height, buffer)
             {}

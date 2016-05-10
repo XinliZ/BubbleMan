@@ -245,3 +245,30 @@ void KinectVision::DirectXPage::CheckBox_Click(Platform::Object^ sender, Windows
     critical_section::scoped_lock lock(m_main->GetCriticalSection());
     this->m_main->EnableMeshRendering(enabled);
 }
+
+
+void KinectVision::DirectXPage::Button_Click_2(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+    // Toolbar button
+    if (this->ToolsPanel->Height == 0)
+    {
+        this->ToolsPanel->Height = nan("");
+    }
+    else
+    {
+        this->ToolsPanel->Height = 0;
+    }
+}
+
+
+void KinectVision::DirectXPage::ProcessDepthImage_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+    float dX = wcstof(this->dX->Text->Data(), nullptr);
+    float dY = wcstof(this->dY->Text->Data(), nullptr);
+    float dZ = wcstof(this->dZ->Text->Data(), nullptr);
+    float dA = wcstof(this->dA->Text->Data(), nullptr);
+    float dB = wcstof(this->dB->Text->Data(), nullptr);
+    float dR = wcstof(this->dR->Text->Data(), nullptr);
+    
+    this->kinectManager->ProcessImage(dX, dY, dZ, dA, dB, dR);
+}

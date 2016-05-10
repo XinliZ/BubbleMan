@@ -57,21 +57,22 @@ namespace KinectVisionLib{
             const T* GetScan0() const { return buffer; }
             Rect GetRect() const { return Rect(0, 0, width, height); }
             Size GetSize() const { return Size(width, height); }
+            Point GetCenter() const { return Point(width / 2, height / 2); }
 
-            T GetPixel(Point point) const {
+            T GetPixel(const Point& point) const {
                 return *(GetScan0() + point.GetY() * GetStride() + point.GetX());
             }
 
-            T GetPixelSafe(Point point) const {
+            T GetPixelSafe(const Point& point) const {
                 return IsValid(point) ? *(GetScan0() + point.GetY() * GetStride() + point.GetX()) : 0;
             }
 
-        protected:
-            void SetPixel(Point point, T pixel) {
+        public:
+            void SetPixel(const Point& point, T pixel) {
                 *(GetScan0() + point.GetY() * GetStride() + point.GetX()) = pixel;
             }
 
-            void SetPixelSafe(Point point, T pixel) {
+            void SetPixelSafe(const Point& point, T pixel) {
                 if (IsValid(point))
                 {
                     *(GetScan0() + point.GetY() * GetStride() + point.GetX()) = pixel;
@@ -79,19 +80,19 @@ namespace KinectVisionLib{
             }
 
         public:
-            bool Test3x3Window(Point point, function<bool(T*, int)> test)
+            bool Test3x3Window(const Point& point, function<bool(T*, int)> test)
             {
                 return TestNxNWindow(1, point, test, threshold);
             }
 
-            bool Test5x5Window(Point point, function<int(T)> test, function<bool(int)> threshold)
+            bool Test5x5Window(const Point& point, function<int(T)> test, function<bool(int)> threshold)
             {
                 // Extend 2 pixel on each direction
                 return TestNxNWindow(2, point, test, threshold);
             }
 
             // Expend range amount on each direction
-            bool TestNxNWindow(int range, Point point, function<int(T)> test, function<bool(int)> threshold)
+            bool TestNxNWindow(int range, const Point& point, function<int(T)> test, function<bool(int)> threshold)
             {
                 int resultCount = 0;
                 for (int i = point.GetY() - range; i <= point.GetY() + range; i++)
@@ -113,6 +114,19 @@ namespace KinectVisionLib{
                     for (int j = 0; j < GetWidth(); j++)
                     {
                         operation(img);
+                        img++;
+                    }
+                }
+            }
+
+            void ImageOperation(function<void(int x, int y, T pixel)> operation) const
+            {
+                for (int i = 0; i < GetHeight(); i++)
+                {
+                    const T* img = this->GetScan0() + i * this->GetStride();
+                    for (int j = 0; j < GetWidth(); j++)
+                    {
+                        operation(j, i, *img);
                         img++;
                     }
                 }

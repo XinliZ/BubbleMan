@@ -19,6 +19,9 @@ namespace KinectVision
         void RenderView(Microsoft::Graphics::Canvas::CanvasDrawingSession^ drawingSession);
         KinectVisionLib::Frame^ GetDepthFrame();
 
+        // Image processing part
+        void ProcessImage(float dX, float dY, float dZ, float dA, float dB, float dR);
+
     private:
         WindowsPreview::Kinect::KinectSensor^ kinectSensor;
         WindowsPreview::Kinect::MultiSourceFrameReader^ multiSourceFrameReader;
@@ -29,7 +32,7 @@ namespace KinectVision
         KinectVisionLib::Frame^ currentFrame;
 
         Windows::Foundation::Collections::IVectorView<Windows::Storage::StorageFile^>^ fileList;
-        int frameNumber;
+        uint32 frameNumber;
 
         KinectVisionLib::KinectVision^ kinectVision;
 

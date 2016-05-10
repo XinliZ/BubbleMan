@@ -10,14 +10,32 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Click="Button_Click">ConnectToKinect</Button>
-            <Button Click="Button_Click_1">LoadFile</Button>
-            <Button Click="Button_Click_3">&gt;</Button>
-            <CheckBox Click="CheckBox_Click">Enable Mesh</CheckBox>
+        <StackPanel>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Button Click="Button_Click">ConnectToKinect</Button>
+                <Button Click="Button_Click_1">LoadFile</Button>
+                <Button Click="Button_Click_3">&gt;</Button>
+                <CheckBox Click="CheckBox_Click">Enable Mesh</CheckBox>
+                <Button Margin="100,0,0,0" Click="Button_Click_2">Tools</Button>
+            </StackPanel>
+            <StackPanel x:Name="ToolsPanel" Height="0" Orientation="Horizontal" Margin="5,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox x:Name="dX" Width="30" Margin="5" Text="0"></TextBox>
+                        <TextBox x:Name="dY" Width="30" Margin="5" Text="0"></TextBox>
+                        <TextBox x:Name="dZ" Width="30" Margin="5" Text="0"></TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox x:Name="dA" Width="30" Margin="5" Text="0"></TextBox>
+                        <TextBox x:Name="dB" Width="30" Margin="5" Text="0"></TextBox>
+                        <TextBox x:Name="dR" Width="30" Margin="5" Text="0"></TextBox>
+                    </StackPanel>
+                </StackPanel>
+                <Button x:Name="ProcessDepthImage" Click="ProcessDepthImage_Click">Process</Button>
+            </StackPanel>
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -35,20 +53,20 @@
     </Grid>
 
 
-  <Page.BottomAppBar>
-    <AppBar x:Name="bottomAppBar" Padding="10,0,10,0">
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-        <AppBarButton AutomationProperties.Name="Sample Button"
+    <Page.BottomAppBar>
+        <AppBar x:Name="bottomAppBar" Padding="10,0,10,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <AppBarButton AutomationProperties.Name="Sample Button"
                       AutomationProperties.AutomationId="SampleAppBarButton0"
                       Click="AppBarButton_Click"/>
-        <AppBarButton AutomationProperties.Name="Sample Button"
+                <AppBarButton AutomationProperties.Name="Sample Button"
                       AutomationProperties.AutomationId="SampleAppBarButton1"
                       Click="AppBarButton_Click"/>
-        <AppBarButton AutomationProperties.Name="Sample Button"
+                <AppBarButton AutomationProperties.Name="Sample Button"
                       AutomationProperties.AutomationId="SampleAppBarButton2"
                       Click="AppBarButton_Click"/>
 
-      </StackPanel>
-    </AppBar>
-  </Page.BottomAppBar>
+            </StackPanel>
+        </AppBar>
+    </Page.BottomAppBar>
 </Page>
