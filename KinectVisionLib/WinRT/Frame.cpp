@@ -19,7 +19,7 @@ Frame::Frame(const Platform::Array<uint16>^ bitmapBuffer, int width, int height)
 {
     if (bitmapBuffer->Length != width * height)
     {
-        throw ref new InvalidArgumentException("Invalid input. The buffer size doesn't match the pixel count");
+        throw ref new InvalidArgumentException(L"Invalid input. The buffer size doesn't match the pixel count");
     }
 
     this->image = std::make_shared<KinectVisionLib::Core::DepthImage>(bitmapBuffer->Data, width, height);
@@ -52,7 +52,7 @@ void Frame::ForEachPixel(PixelOp^ action)
     }
     else
     {
-        throw new exception("Invalid image type");
+        throw ref new InvalidArgumentException(L"Invalid image type");
     }
 }
 
@@ -76,7 +76,7 @@ void Frame::ForEachInterPixel(InterPixelOp^ action)
     }
     else
     {
-        throw new exception("Invalid image type");
+        throw ref new InvalidArgumentException(L"Invalid image type");
     }
 }
 
