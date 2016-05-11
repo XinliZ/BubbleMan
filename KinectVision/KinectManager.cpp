@@ -120,11 +120,6 @@ void KinectManager::RenderView(CanvasDrawingSession^ drawingSession)
     }
 }
 
-KinectVisionLib::Frame^ KinectManager::GetDepthFrame()
-{
-    return this->currentFrame;
-}
-
 void KinectManager::OnMultiSourceFrameArrived(MultiSourceFrameReader ^sender, MultiSourceFrameArrivedEventArgs ^args)
 {
     auto multiSourceFrame = sender->AcquireLatestFrame();
@@ -249,17 +244,19 @@ void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
     if (DoNotProcessForDebugging)
     {
         this->canvasBitmap0.SetData(frame->GetBitmap(this->canvasResourceCreator));
+        this->previousFrame = this->currentFrame;
         this->currentFrame = frame;
     }
     else
     {
         create_task(kinectVision->ProcessFrame(frame)).then([this, frame](KinectVisionLib::ProcessStats^ stats){
+            this->previousFrame = this->currentFrame;
             this->currentFrame = frame;
             this->canvasBitmap0.SetData(stats->GetDebugFrame(nullptr)->GetBitmap(this->canvasResourceCreator));
-            auto farme1 = stats->GetDebugFrame(L"BackgroundDiff");
-            if (farme1 != nullptr)
+            auto frame1 = stats->GetDebugFrame(L"BackgroundDiff");
+            if (frame1 != nullptr)
             {
-                this->canvasBitmap1.SetData(farme1->GetBitmap(this->canvasResourceCreator));
+                this->canvasBitmap1.SetData(frame1->GetBitmap(this->canvasResourceCreator));
             }
         });
     }
@@ -267,10 +264,11 @@ void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
 
 void KinectManager::ProcessImage(float dX, float dY, float dZ, float dA, float dB, float dR)
 {
-    if (this->currentFrame != nullptr)
+    if (this->currentFrame != nullptr && this->previousFrame != nullptr)
     {
-        create_task(kinectVision->TransformFrame(this->currentFrame, dX, dY, dZ, dA, dB, dR)).then([this](KinectVisionLib::Frame^ result) {
-            this->currentFrame = result;
+        create_task(kinectVision->TransformFrame(this->currentFrame, this->previousFrame, dX, dY, dZ, dA, dB, dR)).then([this](KinectVisionLib::Frame^ result) {
+            // TODO: Result should be score and error map
+            this->canvasBitmap1.SetData(result->GetBitmap(this->canvasResourceCreator));
         });
     }
 }

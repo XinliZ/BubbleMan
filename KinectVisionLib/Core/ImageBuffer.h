@@ -24,7 +24,7 @@ namespace KinectVisionLib
                 Image<T>::SetPixelSafe(point, pixel);
             }
 
-            virtual void ToDisplay(uint8* buffer) const override {
+            virtual void RenderAsRGBA(uint8* buffer) const override {
                 // Do nothing here
             }
         };

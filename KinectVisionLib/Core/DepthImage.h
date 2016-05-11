@@ -24,7 +24,7 @@ namespace KinectVisionLib{
                 : Image<uint16>(depthImage)
             {}
 
-            virtual void ToDisplay(uint8* buffer) const
+            virtual void RenderAsRGBA(uint8* buffer) const override
             {
                 int minDepth = 500;
                 int maxDepth = 4500;

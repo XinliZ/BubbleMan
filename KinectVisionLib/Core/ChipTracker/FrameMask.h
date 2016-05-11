@@ -17,7 +17,7 @@ namespace KinectVisionLib
                 });
             }
 
-            virtual void ToDisplay(uint8* buffer) const
+            virtual void RenderAsRGBA(uint8* buffer) const override
             {
                 // Do nothing, we don't need this for now
             }

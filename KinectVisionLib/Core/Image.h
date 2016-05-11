@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Rect.h"
+#include "ImageBase.h"
 
 namespace KinectVisionLib{
     namespace Core{
@@ -8,13 +9,12 @@ namespace KinectVisionLib{
         using namespace std;
 
         template<class T>
-        class Image
+        class Image : public ImageBase
         {
         public:
             Image(int width, int height)
+                : ImageBase(width, height)
             {
-                this->width = width;
-                this->height = height;
                 this->stride = width;
                 this->length = width * height * sizeof(T);
                 this->buffer = new T[width * height];
@@ -26,13 +26,12 @@ namespace KinectVisionLib{
             {}
 
             Image(int width, int height, const T* buffer)
+                : ImageBase(width, height)
             {
-                this->width = width;
-                this->height = height;
                 this->stride = width;
-                this->length = width * height * 2;
+                this->length = width * height * sizeof(T);
                 this->buffer = new T[width * height];
-                for (int i = 0; i < this->height; i++)
+                for (int i = 0; i < this->GetHeight(); i++)
                 {
                     CopyMemory(this->buffer + i * this->stride, buffer + i * width, width * 2);
                 }
@@ -49,15 +48,10 @@ namespace KinectVisionLib{
                 this->buffer = nullptr;
             }
 
-            int GetWidth() const { return width; }
-            int GetHeight() const { return height; }
             int GetLength() const { return length; }
             int GetStride() const { return stride; }
             T* GetScan0() { return buffer; }
             const T* GetScan0() const { return buffer; }
-            Rect GetRect() const { return Rect(0, 0, width, height); }
-            Size GetSize() const { return Size(width, height); }
-            Point GetCenter() const { return Point(width / 2, height / 2); }
 
             T GetPixel(const Point& point) const {
                 return *(GetScan0() + point.GetY() * GetStride() + point.GetX());
@@ -65,6 +59,35 @@ namespace KinectVisionLib{
 
             T GetPixelSafe(const Point& point) const {
                 return IsValid(point) ? *(GetScan0() + point.GetY() * GetStride() + point.GetX()) : 0;
+            }
+
+            bool GetPixelInterpolation(float x, float y, T& result) const {
+                int x0 = (int)x;
+                int y0 = (int)y;
+
+                if (x0 < 0 || x0 >= GetWidth() - 1 || y0 < 0 || y0 >= GetHeight() - 1)
+                {
+                    return false;
+                }
+
+                float p0 = GetPixel(Point(x0, y0));
+                float p1 = GetPixel(Point(x0 + 1, y0));
+                float p2 = GetPixel(Point(x0, y0 + 1));
+                float p3 = GetPixel(Point(x0 + 1, y0 + 1));
+
+                // Filter out invalid points. 
+                // TODO: We may accept the 1 invalid point in 4 of them
+                if (p0 == 0 || p1 == 0 || p2 == 0 || p3 == 0)
+                {
+                    return false;
+                }
+
+                float p = p0 * (x0 + 1 - x) * (y0 + 1 - y) +
+                    p1 * (x - x0) * (y0 + 1 - y) +
+                    p2 * (x0 + 1 - x) * (y - y0) +
+                    p3 * (x - x0) * (y - y0);
+                result = (T)p;
+                return true;
             }
 
         public:
@@ -135,8 +158,8 @@ namespace KinectVisionLib{
             template<typename T1, typename T2>
             void ImageOperation(const Image<T1>* op1, Image<T2>* op2, function<void(const T*, const T1*, T2*)> operation) const
             {
-                assert(this->width == op1->GetWidth() && this->width == op2->GetWidth());
-                assert(this->height == op1->GetHeight() && this->height == op2->GetHeight());
+                assert(this->GetWidth() == op1->GetWidth() && this->GetWidth() == op2->GetWidth());
+                assert(this->GetHeight() == op1->GetHeight() && this->GetHeight() == op2->GetHeight());
                 for (int i = 0; i < GetHeight(); i++)
                 {
                     const T* img = this->GetScan0() + i * this->GetStride();
@@ -155,8 +178,8 @@ namespace KinectVisionLib{
             template<typename T1, typename T2, typename T3>
             void ImageOperation(const Image<T1>* op1, Image<T2>* op2, Image<T3>* op3, function<void(T*, const T1*, T2*, T3*)> operation)
             {
-                assert(this->width == op1->GetWidth() && this->width == op2->GetWidth() && this->width == op3->GetWidth());
-                assert(this->height == op1->GetHeight() && this->height == op2->GetHeight() && this->height == op3->GetHeight());
+                assert(this->GetWidth() == op1->GetWidth() && this->GetWidth() == op2->GetWidth() && this->GetWidth() == op3->GetWidth());
+                assert(this->GetHeight() == op1->GetHeight() && this->GetHeight() == op2->GetHeight() && this->GetHeight() == op3->GetHeight());
                 for (int i = 0; i < GetHeight(); i++)
                 {
                     T* img = this->GetScan0() + i * this->GetStride();
@@ -192,15 +215,7 @@ namespace KinectVisionLib{
                 }
             }
 
-            virtual void ToDisplay(uint8* buffer) const = 0;
-
         private:
-            bool IsValid(Point point) const{
-                return Rect(0, 0, width, height).Contains(point);
-            }
-        private:
-            int width;
-            int height;
             T* buffer;
             int length;
             int stride;

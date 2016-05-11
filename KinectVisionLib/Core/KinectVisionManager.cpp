@@ -29,9 +29,9 @@ void KinectVisionManager::UpdateBlackDotsMask(shared_ptr<DepthImage> image, shar
     }
 }
 
-shared_ptr<const DepthImage> KinectVisionManager::TransformFrame(shared_ptr<const DepthImage> image, float dX, float dY, float dZ, float dA, float dB, float dR)
+shared_ptr<const ErrorMap> KinectVisionManager::TransformFrame(shared_ptr<const DepthImage> image, shared_ptr<const DepthImage> previousImage, float dX, float dY, float dZ, float dA, float dB, float dR)
 {
-    auto target = make_shared<DepthImage>(image->GetSize());
+    auto target = make_shared<ErrorMap>(image->GetSize());
     Point center = image->GetCenter();
     image->ImageOperation([=](int xIn, int yIn, uint16 depth) {
         if (depth > 0)
@@ -48,11 +48,22 @@ shared_ptr<const DepthImage> KinectVisionManager::TransformFrame(shared_ptr<cons
             float x1 = x * depth1 / depth + dX / depth;
             float y1 = y * depth1 / depth + dY / depth;
 
-            Point newPoint((int)(x1 + 0.5f) + center.GetX(), center.GetY() - (int)(y1 + 0.5f));
-            if (target->GetRect().Contains(newPoint))
+            float xTarget = x1 + center.GetX();
+            float yTarget = center.GetY() - y1;
+
+            uint16 previousDepth;
+            if (previousImage->GetPixelInterpolation(xTarget, yTarget, previousDepth))
             {
-                target->SetPixel(newPoint, (uint16)depth1);
+                target->SetPixel(Point(xIn, yIn), (int16)(depth1 - previousDepth));
             }
+            else
+            {
+                target->SetPixelInvalid(Point(xIn, yIn));
+            }
+        }
+        else
+        {
+            target->SetPixelInvalid(Point(xIn, yIn));
         }
     });
     return target;

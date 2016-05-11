@@ -34,10 +34,9 @@ Windows::Foundation::IAsyncOperation<ProcessStats^>^ KinectVision::ProcessFrame(
 }
 
 
-Windows::Foundation::IAsyncOperation<Frame^>^ KinectVision::TransformFrame(Frame^ frame, float dX, float dY, float dZ, float dA, float dB, float dR)
+Windows::Foundation::IAsyncOperation<Frame^>^ KinectVision::TransformFrame(Frame^ frame, Frame^ previousFrame, float dX, float dY, float dZ, float dA, float dB, float dR)
 {
-    return create_async([this, frame, dX, dY, dZ, dA, dB, dR]() -> Frame^ {
-        auto img = frame->GetImage();
-        return ref new Frame(manager.TransformFrame(img, dX, dY, dZ, dA, dB, dR));
+    return create_async([=]() -> Frame^ {
+        return ref new Frame(manager.TransformFrame(frame->GetImage(), previousFrame->GetImage(), dX, dY, dZ, dA, dB, dR));
     });
 }

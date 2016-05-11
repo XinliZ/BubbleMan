@@ -116,6 +116,7 @@
     <ClInclude Include="Core\ProcessContext.h" />
     <ClInclude Include="Core\LocalImage.h" />
     <ClInclude Include="Core\ImageBuffer.h" />
+    <ClInclude Include="Core\ImageBase.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

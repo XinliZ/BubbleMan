@@ -13,7 +13,7 @@ namespace KinectVisionLib
                 : Image(width, height)
             {}
 
-            virtual void ToDisplay(uint8* buffer) const
+            virtual void RenderAsRGBA(uint8* buffer) const override
             {
                 NormalizeMidDataToBuffer(buffer);
             }

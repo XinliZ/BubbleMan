@@ -17,7 +17,8 @@ namespace KinectVision
         void LoadNextFrame();
 
         void RenderView(Microsoft::Graphics::Canvas::CanvasDrawingSession^ drawingSession);
-        KinectVisionLib::Frame^ GetDepthFrame();
+        KinectVisionLib::Frame^ GetDepthFrame() { return this->currentFrame; }
+        KinectVisionLib::Frame^ GetPreviousDepthFrame() { return this->previousFrame; }
 
         // Image processing part
         void ProcessImage(float dX, float dY, float dZ, float dA, float dB, float dR);
@@ -30,6 +31,7 @@ namespace KinectVision
         ThreadSafeBox<Microsoft::Graphics::Canvas::CanvasBitmap^> canvasBitmap0;
         ThreadSafeBox<Microsoft::Graphics::Canvas::CanvasBitmap^> canvasBitmap1;
         KinectVisionLib::Frame^ currentFrame;
+        KinectVisionLib::Frame^ previousFrame;
 
         Windows::Foundation::Collections::IVectorView<Windows::Storage::StorageFile^>^ fileList;
         uint32 frameNumber;

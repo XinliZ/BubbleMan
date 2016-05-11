@@ -35,7 +35,7 @@ namespace KinectVisionLib{
                 return &context;
             }
 
-            shared_ptr<const DepthImage> TransformFrame(shared_ptr<const DepthImage> image, float dX, float dY, float dZ, float dA, float dB, float dR);
+            shared_ptr<const ErrorMap> TransformFrame(shared_ptr<const DepthImage> image, shared_ptr<const DepthImage> previousImage, float dX, float dY, float dZ, float dA, float dB, float dR);
 
         private:
             void UpdateBlackDotsMask(shared_ptr<DepthImage> image, shared_ptr<DepthImage> newImage);

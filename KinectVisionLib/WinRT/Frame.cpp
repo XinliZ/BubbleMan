@@ -10,7 +10,7 @@ Frame::Frame()
 {
 }
 
-Frame::Frame(std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image)
+Frame::Frame(std::shared_ptr<const KinectVisionLib::Core::ImageBase> image)
 {
     this->image = image;
 }
@@ -36,55 +36,56 @@ CanvasBitmap^ Frame::GetBitmap(ICanvasResourceCreator^ canvas)
 
 void Frame::ForEachPixel(PixelOp^ action)
 {
-    for (int i = 0; i < this->image->GetHeight(); i++)
+    const KinectVisionLib::Core::DepthImage * img = dynamic_cast<const KinectVisionLib::Core::DepthImage*>(this->image.get());
+    if (img != nullptr)
     {
-        const uint16* scan = this->image->GetScan0() + i * this->image->GetStride();
-        for (int j = 0; j < this->image->GetWidth(); j++)
+        for (int i = 0; i < img->GetHeight(); i++)
         {
-            action(j, i, *scan);
+            const uint16* scan = img->GetScan0() + i * img->GetStride();
+            for (int j = 0; j < img->GetWidth(); j++)
+            {
+                action(j, i, *scan);
 
-            scan++;
+                scan++;
+            }
         }
+    }
+    else
+    {
+        throw new exception("Invalid image type");
     }
 }
 
 void Frame::ForEachInterPixel(InterPixelOp^ action)
 {
-    for (int i = 0; i < this->image->GetHeight() - 1; i++)
+    const KinectVisionLib::Core::DepthImage * img = dynamic_cast<const KinectVisionLib::Core::DepthImage*>(this->image.get());
+    if (img != nullptr)
     {
-        const uint16* scan = this->image->GetScan0() + i * this->image->GetStride();
-        const uint16* scan1 = this->image->GetScan0() + (i + 1) * this->image->GetStride();
-        for (int j = 0; j < this->image->GetWidth() - 1; j++)
+        for (int i = 0; i < img->GetHeight() - 1; i++)
         {
-            action(j, i, *scan, *(scan + 1), *scan1, *(scan1 + 1));
+            const uint16* scan = img->GetScan0() + i * img->GetStride();
+            const uint16* scan1 = img->GetScan0() + (i + 1) * img->GetStride();
+            for (int j = 0; j < img->GetWidth() - 1; j++)
+            {
+                action(j, i, *scan, *(scan + 1), *scan1, *(scan1 + 1));
 
-            scan++;
-            scan1++;
+                scan++;
+                scan1++;
+            }
         }
+    }
+    else
+    {
+        throw new exception("Invalid image type");
     }
 }
 
-//
-//void Frame::CopyToArray(Platform::WriteOnlyArray<uint16>^ buffer)
-//{
-//    if (buffer->Length < this->bitmapBuffer16->Length)
-//    {
-//        throw ref new InvalidArgumentException("The input buffer is insufficent to copy the frame data.");
-//    }
-//
-//    for (unsigned int i = 0; i < buffer->Length; i++)
-//    {
-//        buffer->Data[i] = this->bitmapBuffer16[i];
-//    }
-//}
-
-CanvasBitmap^ Frame::CreateBitmapFromBuffer(ICanvasResourceCreator^ canvas, std::shared_ptr<const KinectVisionLib::Core::Image<uint16>> image)
+CanvasBitmap^ Frame::CreateBitmapFromBuffer(ICanvasResourceCreator^ canvas, std::shared_ptr<const KinectVisionLib::Core::ImageBase> image)
 {
     // RGBA buffer
     auto bitmapBuffer = ref new Array<byte>(image->GetWidth() * image->GetHeight() * 4);
 
-    image->ToDisplay(bitmapBuffer->Data);
+    image->RenderAsRGBA(bitmapBuffer->Data);
 
     return CanvasBitmap::CreateFromBytes(canvas, bitmapBuffer, image->GetWidth(), image->GetHeight(), Microsoft::Graphics::Canvas::DirectX::DirectXPixelFormat::R8G8B8A8UIntNormalized);
-
 }

@@ -92,6 +92,7 @@
     <ClInclude Include="Core\ChipTracker\DeltaMotionState.h" />
     <ClInclude Include="Core\ChipTracker\ErrorMap.h" />
     <ClInclude Include="Core\DepthPixel.h" />
+    <ClInclude Include="Core\ImageBase.h" />
     <ClInclude Include="Core\ImageBuffer.h" />
     <ClInclude Include="Core\LocalImage.h" />
     <ClInclude Include="Core\ProcessContext.h" />

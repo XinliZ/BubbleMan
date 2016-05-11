@@ -49,7 +49,7 @@ namespace KinectVisionLib{
                 return GetPixel(point) == 0;
             }
 
-            virtual void ToDisplay(uint8* buffer) const
+            virtual void RenderAsRGBA(uint8* buffer) const override
             {
                 COLORREF colors[] = { RGB(0, 0, 0), RGB(255, 0, 0), RGB(0, 255, 0), RGB(0, 0, 255), RGB(127, 0, 0), RGB(0, 127, 0), RGB(0, 0, 127), RGB(255, 255, 0), RGB(0, 255, 255), RGB(255, 0, 255), RGB(127, 127, 0), RGB(127, 0, 127), RGB(0, 127, 127) };
                 for (int i = 0; i < GetHeight(); i++)
