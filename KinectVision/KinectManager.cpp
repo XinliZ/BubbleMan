@@ -262,7 +262,7 @@ void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
     }
 }
 
-void KinectManager::ProcessImage(float dX, float dY, float dZ, float dA, float dB, float dR)
+bool KinectManager::ProcessImage(float dX, float dY, float dZ, float dA, float dB, float dR)
 {
     if (this->currentFrame != nullptr && this->previousFrame != nullptr)
     {
@@ -270,5 +270,7 @@ void KinectManager::ProcessImage(float dX, float dY, float dZ, float dA, float d
             // TODO: Result should be score and error map
             this->canvasBitmap1.SetData(result->GetBitmap(this->canvasResourceCreator));
         });
+        return true;
     }
+    return false;
 }

@@ -270,5 +270,10 @@ void KinectVision::DirectXPage::ProcessDepthImage_Click(Platform::Object^ sender
     float dB = wcstof(this->dB->Text->Data(), nullptr);
     float dR = wcstof(this->dR->Text->Data(), nullptr);
     
-    this->kinectManager->ProcessImage(dX, dY, dZ, dA, dB, dR);
+    if (!this->kinectManager->ProcessImage(dX, dY, dZ, dA, dB, dR))
+    {
+        auto dialog = ref new Windows::UI::Popups::MessageDialog("Not able to process the command. We need at least 2 frames to process.");
+        dialog->Commands->Append(ref new Windows::UI::Popups::UICommand("Ok"));
+        dialog->ShowAsync();
+    }
 }
