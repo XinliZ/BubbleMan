@@ -21,7 +21,7 @@ namespace KinectVision
         KinectVisionLib::Frame^ GetPreviousDepthFrame() { return this->previousFrame; }
 
         // Image processing part
-        void ProcessImage(float dX, float dY, float dZ, float dA, float dB, float dR);
+        bool ProcessImage(float dX, float dY, float dZ, float dA, float dB, float dR);
 
     private:
         WindowsPreview::Kinect::KinectSensor^ kinectSensor;
