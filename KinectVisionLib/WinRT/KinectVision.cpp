@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "KinectVision.h"
 #include "ProcessStats.h"
+#include "ErrorStats.h"
 #include "Core/Image.h"
 #include "Core/KinectVisionManager.h"
 
@@ -34,9 +35,10 @@ Windows::Foundation::IAsyncOperation<ProcessStats^>^ KinectVision::ProcessFrame(
 }
 
 
-Windows::Foundation::IAsyncOperation<Frame^>^ KinectVision::TransformFrame(Frame^ frame, Frame^ previousFrame, float dX, float dY, float dZ, float dA, float dB, float dR)
+Windows::Foundation::IAsyncOperation<ErrorStats^>^ KinectVision::TransformFrame(Frame^ frame, Frame^ previousFrame, float dX, float dY, float dZ, float dA, float dB, float dR)
 {
-    return create_async([=]() -> Frame^ {
-        return ref new Frame(manager.TransformFrame(frame->GetImage(), previousFrame->GetImage(), dX, dY, dZ, dA, dB, dR));
+    return create_async([=]() -> ErrorStats^ {
+        auto errorMap = manager.TransformFrame(frame->GetImage(), previousFrame->GetImage(), dX, dY, dZ, dA, dB, dR);
+        return ref new ErrorStats(ref new Frame(errorMap), errorMap->GetMeanSquareError(), errorMap->GetPositiveError(), errorMap->GetNegativeError());
     });
 }

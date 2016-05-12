@@ -87,6 +87,11 @@ DirectXPage::DirectXPage():
 
     this->kinectManager = ref new KinectManager();
     this->kinectManager->Initialize(this->canvas);
+    this->kinectManager->ErrorStatsUpdated += ref new KinectVision::ErrorStatsUpdatedEventHandler([this](KinectVisionLib::ErrorStats^ error) {
+        this->meanSquareError->Text = error->GetMeanSquareError().ToString();
+        this->positiveError->Text = error->GetPositiveError().ToString();
+        this->negativeError->Text = error->GetNegativeError().ToString();
+    });
 
     m_main = std::unique_ptr<KinectVisionMain>(new KinectVisionMain(m_deviceResources));
     m_main->StartRenderLoop(this->kinectManager);

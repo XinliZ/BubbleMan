@@ -105,6 +105,7 @@
     <ClInclude Include="Core\Size.h" />
     <ClInclude Include="Core\Utils.h" />
     <ClInclude Include="Vector3.h" />
+    <ClInclude Include="WinRT\ErrorStats.h" />
     <ClInclude Include="WinRT\Frame.h" />
     <ClInclude Include="Core\ChipTracker\FrameMask.h" />
     <ClInclude Include="Core\Image.h" />

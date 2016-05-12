@@ -23,31 +23,64 @@ namespace KinectVisionLib
             {
                 ImageOperation([buffer, this](int x, int y, int16 pixel) {
                     int index = (y * GetWidth() + x) * 4;
-                    if (pixel == invalidBits)        // Invalid pixel
+                    if (pixel == invalidBits)        // Invalid pixel is green
                     {
                         buffer[index + 1] = 0xFF;
                         buffer[index + 3] = 0xFF;
                     }
                     else if (pixel > 0)
                     {
-                        buffer[index] = pixel & 0xFF;
+                        buffer[index] = pixel > 0xFF ? 0xFF : pixel;
+                        buffer[index + 3] = 0xFF;
+                    }
+                    else if (pixel < 0)
+                    {
+                        buffer[index + 2] = (-pixel) > 0xFF ? 0xFF : (-pixel);
                         buffer[index + 3] = 0xFF;
                     }
                     else
                     {
-                        buffer[index + 2] = (-pixel) & 0xFF;
                         buffer[index + 3] = 0xFF;
                     }
                 });
             }
 
         public:
-            float AnalyzeResult()
+            float AnalyzeResult() { return 0.0f; }
+            void AnalyzeResults()
             {
-                // Histogram and binarization
-                //for ()
-                return 0.0f;
+                float squareError = 0.0f;
+                float totalPositive = 0.0f;
+                float totalNegative = 0.0f;
+                float count = 0;
+                float positiveCount = 0;
+                float negativeCount = 0;
+
+                static_cast<const ErrorMap*>(this)->ImageOperation([&](int x, int y, int16 pixel) {
+                    if (pixel != invalidBits)
+                    {
+                        squareError += pixel * pixel;
+                        if (pixel > 0) {
+                            totalPositive += pixel;
+                            positiveCount++;
+                        }
+                        else if (pixel < 0) {
+                            totalNegative -= pixel;
+                            negativeCount++;
+                        }
+
+                        count++;
+                    }
+                });
+                
+                this->meanSquareError = squareError / count;
+                this->positiveError = totalPositive / positiveCount;
+                this->negativeError = totalNegative / negativeCount;
             }
+
+            float GetMeanSquareError() const { return this->meanSquareError; }
+            float GetPositiveError() const { return this->positiveError; }
+            float GetNegativeError() const { return this->negativeError; }
 
             float TestXDirection() const
             {
@@ -69,6 +102,10 @@ namespace KinectVisionLib
         private:
             //Rect area;
             const int16 invalidBits = (int16)0x8000;
+
+            float meanSquareError;
+            float positiveError;
+            float negativeError;
         };
     }
 }

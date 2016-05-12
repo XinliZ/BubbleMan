@@ -4,6 +4,8 @@
 
 namespace KinectVision
 {
+    public delegate void ErrorStatsUpdatedEventHandler(KinectVisionLib::ErrorStats^ errorStats);
+
     ref class KinectManager sealed
     {
     public:
@@ -22,6 +24,7 @@ namespace KinectVision
 
         // Image processing part
         bool ProcessImage(float dX, float dY, float dZ, float dA, float dB, float dR);
+        event ErrorStatsUpdatedEventHandler^ ErrorStatsUpdated;
 
     private:
         WindowsPreview::Kinect::KinectSensor^ kinectSensor;
@@ -48,6 +51,9 @@ namespace KinectVision
 
         KinectVisionLib::Frame^ KinectManager::BuildFrameFromBitmap(Microsoft::Graphics::Canvas::CanvasBitmap^ bitmap);
         KinectVisionLib::Frame^ KinectManager::BuildFrameFromDepthFrame(WindowsPreview::Kinect::DepthFrame^ depthFrame);
+
+    private:
+        void ProcessImage(KinectVisionLib::Frame^ currentFrame, KinectVisionLib::Frame^ previousFrame, float dX, float dY, float dZ, float dA, float dB, float dR, int iteration);
 
     };
 }

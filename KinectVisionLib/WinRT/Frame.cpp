@@ -85,6 +85,8 @@ CanvasBitmap^ Frame::CreateBitmapFromBuffer(ICanvasResourceCreator^ canvas, std:
     // RGBA buffer
     auto bitmapBuffer = ref new Array<byte>(image->GetWidth() * image->GetHeight() * 4);
 
+    // TODO: Sometimes it is more flexible to have rendering code in the UI so we can render anyway we want. 
+    // The issue here is that the image could be any pixel type and need different rendering logic
     image->RenderAsRGBA(bitmapBuffer->Data);
 
     return CanvasBitmap::CreateFromBytes(canvas, bitmapBuffer, image->GetWidth(), image->GetHeight(), Microsoft::Graphics::Canvas::DirectX::DirectXPixelFormat::R8G8B8A8UIntNormalized);

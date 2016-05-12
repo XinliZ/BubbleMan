@@ -117,6 +117,7 @@
     <ClInclude Include="Core\LocalImage.h" />
     <ClInclude Include="Core\ImageBuffer.h" />
     <ClInclude Include="Core\ImageBase.h" />
+    <ClInclude Include="WinRT\ErrorStats.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

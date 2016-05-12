@@ -266,11 +266,23 @@ bool KinectManager::ProcessImage(float dX, float dY, float dZ, float dA, float d
 {
     if (this->currentFrame != nullptr && this->previousFrame != nullptr)
     {
-        create_task(kinectVision->TransformFrame(this->currentFrame, this->previousFrame, dX, dY, dZ, dA, dB, dR)).then([this](KinectVisionLib::Frame^ result) {
-            // TODO: Result should be score and error map
-            this->canvasBitmap1.SetData(result->GetBitmap(this->canvasResourceCreator));
-        });
+        ProcessImage(this->currentFrame, this->previousFrame, dX, dY, dZ, dA, dB, dR, 0);
         return true;
     }
     return false;
+}
+
+void KinectManager::ProcessImage(KinectVisionLib::Frame^ currentFrame, KinectVisionLib::Frame^ previousFrame, float dX, float dY, float dZ, float dA, float dB, float dR, int iteration)
+{
+    create_task(kinectVision->TransformFrame(this->currentFrame, this->previousFrame, dX, dY, dZ, dA, dB, dR))
+        .then([this, iteration, currentFrame, previousFrame](KinectVisionLib::ErrorStats^ result) {
+            // TODO: Result should be score and error map
+            this->canvasBitmap1.SetData(result->GetErrorFrame()->GetBitmap(this->canvasResourceCreator));
+            ErrorStatsUpdated(result);
+
+            if (iteration < 10 && result != nullptr /* Check the error score */)
+            {
+                //ProcessImage(currentFrame, previousFrame, dX, dY, dZ, dA, dB, dR, iteration + 1);
+            }
+    });
 }

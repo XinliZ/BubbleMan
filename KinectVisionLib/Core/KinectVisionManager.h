@@ -35,7 +35,8 @@ namespace KinectVisionLib{
                 return &context;
             }
 
-            shared_ptr<const ErrorMap> TransformFrame(shared_ptr<const DepthImage> image, shared_ptr<const DepthImage> previousImage, float dX, float dY, float dZ, float dA, float dB, float dR);
+            shared_ptr<const ErrorMap> TransformFrame(shared_ptr<const DepthImage> image, shared_ptr<const DepthImage> previousImage, 
+                float dX, float dY, float dZ, float dA, float dB, float dR) const;
 
         private:
             void UpdateBlackDotsMask(shared_ptr<DepthImage> image, shared_ptr<DepthImage> newImage);
@@ -129,6 +130,12 @@ namespace KinectVisionLib{
                 }
                 return result;
             }
+
+        private:
+            shared_ptr<ErrorMap> MatchImages(shared_ptr<const DepthImage> image, shared_ptr<const DepthImage> previousImage, 
+                float dX, float dY, float dZ, float dA, float dB, float dR) const;
+
+            void UpdateParametersOnErrorMap(shared_ptr<ErrorMap> errorMap, float dX, float dY, float dZ, float dA, float dB, float dR) const;
 
         private:
             //list<shared_ptr<Image>> imageList;
