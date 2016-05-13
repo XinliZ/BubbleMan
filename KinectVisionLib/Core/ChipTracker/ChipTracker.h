@@ -46,7 +46,7 @@ namespace KinectVisionLib
                 {
                     ErrorMap errorMap(depthImage->GetSize());
                     chip->Match(depthImage, deltaMotionState, errorMap);
-                    float score = errorMap.AnalyzeResult();
+                    float score = errorMap.GetMeanSquareError();
                     if (score < iterationThreshold)
                     {
                         // Matching succeeded

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../GlobalConsts.h"
 #include "../Image.h"
 
 namespace KinectVisionLib
@@ -23,6 +24,7 @@ namespace KinectVisionLib
             {
                 ImageOperation([buffer, this](int x, int y, int16 pixel) {
                     int index = (y * GetWidth() + x) * 4;
+                    pixel *= 2;
                     if (pixel == invalidBits)        // Invalid pixel is green
                     {
                         buffer[index + 1] = 0xFF;
@@ -46,8 +48,21 @@ namespace KinectVisionLib
             }
 
         public:
-            float AnalyzeResult() { return 0.0f; }
-            void AnalyzeResults()
+            float GetMeanSquareError() const { return this->meanSquareError; }
+            float GetPositiveError() const { return this->positiveError; }
+            float GetNegativeError() const { return this->negativeError; }
+            float GetXOffset() const { return this->xOffset; }
+            float GetYOffset() const { return this->yOffset; }
+
+            void AnalyzeResults(const DepthImage* img)
+            {
+                MeasureErrors(this->meanSquareError, this->positiveError, this->negativeError);
+
+                PredictXYOffset(img, this->xOffset, this->yOffset);
+            }
+
+        private:
+            void MeasureErrors(float& meanSquareError, float& positiveError, float& negativeError) const
             {
                 float squareError = 0.0f;
                 float totalPositive = 0.0f;
@@ -56,7 +71,7 @@ namespace KinectVisionLib
                 float positiveCount = 0;
                 float negativeCount = 0;
 
-                static_cast<const ErrorMap*>(this)->ImageOperation([&](int x, int y, int16 pixel) {
+                ImageOperation([&](int x, int y, int16 pixel) {
                     if (pixel != invalidBits)
                     {
                         squareError += pixel * pixel;
@@ -68,19 +83,31 @@ namespace KinectVisionLib
                             totalNegative -= pixel;
                             negativeCount++;
                         }
-
                         count++;
                     }
                 });
-                
-                this->meanSquareError = squareError / count;
-                this->positiveError = totalPositive / positiveCount;
-                this->negativeError = totalNegative / negativeCount;
+
+                meanSquareError = squareError / count;
+                positiveError = totalPositive / positiveCount;
+                negativeError = totalNegative / negativeCount;
             }
 
-            float GetMeanSquareError() const { return this->meanSquareError; }
-            float GetPositiveError() const { return this->positiveError; }
-            float GetNegativeError() const { return this->negativeError; }
+            void PredictXYOffset(const DepthImage* img, float& xOffset, float& yOffset) const
+            {
+                float totalXOffset = 0.0f;
+                float totalYOffset = 0.0f;
+                float count = 0.0f;
+                NormalOperation<uint16>(img, [&](Vector3 v, int16 error) {
+                    auto result = v * error;
+                    totalXOffset += v.GetX();
+                    totalYOffset += v.GetY();
+                    count++;
+                });
+                xOffset = totalXOffset / count;
+                yOffset = totalYOffset / count;
+            }
+
+        public:
 
             float TestXDirection() const
             {
@@ -106,6 +133,9 @@ namespace KinectVisionLib
             float meanSquareError;
             float positiveError;
             float negativeError;
+
+            float xOffset;
+            float yOffset;
         };
     }
 }

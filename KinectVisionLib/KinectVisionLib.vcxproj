@@ -92,6 +92,7 @@
     <ClInclude Include="Core\ChipTracker\DeltaMotionState.h" />
     <ClInclude Include="Core\ChipTracker\ErrorMap.h" />
     <ClInclude Include="Core\DepthPixel.h" />
+    <ClInclude Include="Core\GlobalConsts.h" />
     <ClInclude Include="Core\ImageBase.h" />
     <ClInclude Include="Core\ImageBuffer.h" />
     <ClInclude Include="Core\LocalImage.h" />
@@ -104,7 +105,7 @@
     <ClInclude Include="Core\Segmentation\ImageSegmentation.h" />
     <ClInclude Include="Core\Size.h" />
     <ClInclude Include="Core\Utils.h" />
-    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Core\Vector3.h" />
     <ClInclude Include="WinRT\ErrorStats.h" />
     <ClInclude Include="WinRT\Frame.h" />
     <ClInclude Include="Core\ChipTracker\FrameMask.h" />

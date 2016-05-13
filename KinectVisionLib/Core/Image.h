@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Rect.h"
+#include "Vector3.h"
 #include "ImageBase.h"
 
 namespace KinectVisionLib{
@@ -127,6 +128,35 @@ namespace KinectVisionLib{
                     }
                 }
                 return threshold(resultCount);
+            }
+
+            template<typename T1>
+            void NormalOperation(const Image<T1>* depthImage, function<void(Vector3, int16)> operation) const
+            {
+                for (int i = 0; i < GetHeight() - 1; i++)
+                {
+                    const T1* img = depthImage->GetScan0() + i * depthImage->GetStride();
+                    const T1* imgNext = depthImage->GetScan0() + (i + 1) * depthImage->GetStride();
+                    const T* error = this->GetScan0() + i * this->GetStride();
+                    for (int j = 0; j < GetWidth() - 1; j++)
+                    {
+                        float p0 = (float)*img;
+                        float p1 = (float)*(img + 1);
+                        float p2 = (float)*imgNext;
+                        if (p0 > 0 && p1 > 0 && p2 > 0)
+                        {
+                            Vector3 v1 = Vector3(p0 / GlobalConsts::KinectD0, 0.0f, p0 - p1);
+                            Vector3 v2 = Vector3(0.0f, p0 / GlobalConsts::KinectD0, p0 - p2);
+                            Vector3 normal = (v1 ^ v2).Normalize();       // TODO: Left hand?
+
+                            operation(normal, *error);
+                        }
+
+                        img++;
+                        imgNext++;
+                        error++;
+                    }
+                }
             }
 
             void ImageOperation(function<void(T*)> operation)

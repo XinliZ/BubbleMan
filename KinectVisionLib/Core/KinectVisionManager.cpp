@@ -3,6 +3,8 @@
 
 using namespace KinectVisionLib::Core;
 
+const float GlobalConsts::KinectD0 = 500.0f;
+
 KinectVisionManager::KinectVisionManager()
 {
 }
@@ -31,21 +33,21 @@ void KinectVisionManager::UpdateBlackDotsMask(shared_ptr<DepthImage> image, shar
 
 shared_ptr<const ErrorMap> KinectVisionManager::TransformFrame(shared_ptr<const DepthImage> image, shared_ptr<const DepthImage> previousImage, float dX, float dY, float dZ, float dA, float dB, float dR) const
 {
-    auto errorMap = MatchImages(image, previousImage, dX, dY, dZ, dA, dB, dR);
-    errorMap->AnalyzeResults();
+    auto errorMap = MatchImages(image.get(), previousImage.get(), dX, dY, dZ, dA, dB, dR);
+    errorMap->AnalyzeResults(image.get());
 
-    UpdateParametersOnErrorMap(errorMap, dX, dY, dZ, dA, dB, dR);
+    UpdateParametersOnErrorMap(errorMap.get(), dX, dY, dZ, dA, dB, dR);
 
     return errorMap;
 }
 
-void KinectVisionManager::UpdateParametersOnErrorMap(shared_ptr<ErrorMap> errorMap, float dX, float dY, float dZ, float dA, float dB, float dR) const
+void KinectVisionManager::UpdateParametersOnErrorMap(ErrorMap* errorMap, float dX, float dY, float dZ, float dA, float dB, float dR) const
 {
 //    MeasureAverage(errorMap);
 //    Measure
 }
 
-shared_ptr<ErrorMap> KinectVisionManager::MatchImages(shared_ptr<const DepthImage> image, shared_ptr<const DepthImage> previousImage, float dX, float dY, float dZ, float dA, float dB, float dR) const
+shared_ptr<ErrorMap> KinectVisionManager::MatchImages(const DepthImage* image, const DepthImage* previousImage, float dX, float dY, float dZ, float dA, float dB, float dR) const
 {
     auto target = make_shared<ErrorMap>(image->GetSize());
     Point center = image->GetCenter();

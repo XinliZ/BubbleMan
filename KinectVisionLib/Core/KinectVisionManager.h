@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GlobalConsts.h"
 #include "Image.h"
 #include "AreaMap.h"
 #include "DifferencialImage.h"
@@ -132,10 +133,10 @@ namespace KinectVisionLib{
             }
 
         private:
-            shared_ptr<ErrorMap> MatchImages(shared_ptr<const DepthImage> image, shared_ptr<const DepthImage> previousImage, 
+            shared_ptr<ErrorMap> MatchImages(const DepthImage* image, const DepthImage* previousImage, 
                 float dX, float dY, float dZ, float dA, float dB, float dR) const;
 
-            void UpdateParametersOnErrorMap(shared_ptr<ErrorMap> errorMap, float dX, float dY, float dZ, float dA, float dB, float dR) const;
+            void UpdateParametersOnErrorMap(ErrorMap* errorMap, float dX, float dY, float dZ, float dA, float dB, float dR) const;
 
         private:
             //list<shared_ptr<Image>> imageList;

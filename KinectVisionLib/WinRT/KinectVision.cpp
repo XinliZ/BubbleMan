@@ -39,6 +39,6 @@ Windows::Foundation::IAsyncOperation<ErrorStats^>^ KinectVision::TransformFrame(
 {
     return create_async([=]() -> ErrorStats^ {
         auto errorMap = manager.TransformFrame(frame->GetImage(), previousFrame->GetImage(), dX, dY, dZ, dA, dB, dR);
-        return ref new ErrorStats(ref new Frame(errorMap), errorMap->GetMeanSquareError(), errorMap->GetPositiveError(), errorMap->GetNegativeError());
+        return ref new ErrorStats(ref new Frame(errorMap), errorMap->GetMeanSquareError(), errorMap->GetPositiveError(), errorMap->GetNegativeError(), errorMap->GetXOffset(), errorMap->GetYOffset());
     });
 }

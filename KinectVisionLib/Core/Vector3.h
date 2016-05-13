@@ -4,6 +4,8 @@ namespace KinectVisionLib
 {
     namespace Core
     {
+        using namespace std;
+
         class Vector3
         {
         public:
@@ -24,6 +26,27 @@ namespace KinectVisionLib
             Vector3 operator-(const Vector3& v) const
             {
                 return Vector3(x - v.x, y - v.y, z - v.z);
+            }
+
+            Vector3 operator*(float s) const
+            {
+                return Vector3(x * s, y * s, z * s);
+            }
+
+            Vector3 operator^(const Vector3& v) const
+            {
+                return Vector3(
+                    y * v.z - z * v.y,
+                    z * v.x - x * v.z,
+                    x * v.y - y * v.x
+                );
+            }
+
+            Vector3 Normalize() const
+            {
+                auto s = x * x + y * y + z * z;
+                auto r = 1 / sqrt(s);
+                return Vector3(x * r, y * r, z * r);
             }
 
             Vector3 RotateTranslate(float rX, float rY, float rZ, float dX, float dY, float dZ)

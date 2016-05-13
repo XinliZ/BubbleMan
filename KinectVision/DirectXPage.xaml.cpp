@@ -91,6 +91,8 @@ DirectXPage::DirectXPage():
         this->meanSquareError->Text = error->GetMeanSquareError().ToString();
         this->positiveError->Text = error->GetPositiveError().ToString();
         this->negativeError->Text = error->GetNegativeError().ToString();
+        this->xOffset->Text = error->GetXOffset().ToString();
+        this->yOffset->Text = error->GetYOffset().ToString();
     });
 
     m_main = std::unique_ptr<KinectVisionMain>(new KinectVisionMain(m_deviceResources));
