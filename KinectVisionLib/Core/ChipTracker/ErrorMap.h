@@ -97,11 +97,14 @@ namespace KinectVisionLib
                 float totalXOffset = 0.0f;
                 float totalYOffset = 0.0f;
                 float count = 0.0f;
-                NormalOperation<uint16>(img, [&](Vector3 v, int16 error) {
-                    auto result = v * error;
-                    totalXOffset += v.GetX();
-                    totalYOffset += v.GetY();
-                    count++;
+                img->NormalOperation<int16>(this, [&](Vector3 v, int16 error) {
+                    if (error != invalidBits)
+                    {
+                        auto result = v * error;
+                        totalXOffset += v.GetX();
+                        totalYOffset += v.GetY();
+                        count++;
+                    }
                 });
                 xOffset = totalXOffset / count;
                 yOffset = totalYOffset / count;

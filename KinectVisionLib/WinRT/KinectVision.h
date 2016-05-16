@@ -18,6 +18,9 @@ namespace KinectVisionLib
 
         Windows::Foundation::IAsyncOperation<ErrorStats^>^ TransformFrame(Frame^ frame, Frame^ previousFrame, float dX, float dY, float dZ, float dA, float dB, float dR);
 
+        Windows::Foundation::IAsyncOperation<Frame^>^ GetXNormalFrame(Frame^ frame);
+        Windows::Foundation::IAsyncOperation<Frame^>^ GetYNormalFrame(Frame^ frame);
+
     private:
         KinectVisionLib::Core::KinectVisionManager manager;
     };

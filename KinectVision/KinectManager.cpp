@@ -243,9 +243,11 @@ void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
     bool DoNotProcessForDebugging = true;
     if (DoNotProcessForDebugging)
     {
-        this->canvasBitmap0.SetData(frame->GetBitmap(this->canvasResourceCreator));
         this->previousFrame = this->currentFrame;
         this->currentFrame = frame;
+        create_task(kinectVision->GetXNormalFrame(frame)).then([this](KinectVisionLib::Frame^ result) {
+            this->canvasBitmap0.SetData(result->GetBitmap(this->canvasResourceCreator));
+        });
     }
     else
     {
@@ -284,5 +286,5 @@ void KinectManager::ProcessImage(KinectVisionLib::Frame^ currentFrame, KinectVis
             {
                 //ProcessImage(currentFrame, previousFrame, dX, dY, dZ, dA, dB, dR, iteration + 1);
             }
-    });
+        });
 }

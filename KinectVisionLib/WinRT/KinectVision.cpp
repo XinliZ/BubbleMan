@@ -42,3 +42,19 @@ Windows::Foundation::IAsyncOperation<ErrorStats^>^ KinectVision::TransformFrame(
         return ref new ErrorStats(ref new Frame(errorMap), errorMap->GetMeanSquareError(), errorMap->GetPositiveError(), errorMap->GetNegativeError(), errorMap->GetXOffset(), errorMap->GetYOffset());
     });
 }
+
+Windows::Foundation::IAsyncOperation<Frame^>^ KinectVision::GetXNormalFrame(Frame^ frame)
+{
+    return create_async([=]() -> Frame^ {
+        auto result = manager.CreateNormalMap(frame->GetImage(), 0);
+        return ref new Frame(result);
+    });
+}
+
+Windows::Foundation::IAsyncOperation<Frame^>^ KinectVision::GetYNormalFrame(Frame^ frame)
+{
+    return create_async([=]() -> Frame^ {
+        auto result = manager.CreateNormalMap(frame->GetImage(), 1);
+        return ref new Frame(result);
+    });
+}

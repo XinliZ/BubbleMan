@@ -88,3 +88,13 @@ shared_ptr<ErrorMap> KinectVisionManager::MatchImages(const DepthImage* image, c
     });
     return target;
 }
+
+shared_ptr<const ErrorMap> KinectVisionManager::CreateNormalMap(shared_ptr<const DepthImage> image, int direction)
+{
+    const int normalMapFactor = 127;
+    shared_ptr<ErrorMap> normalMap = make_shared<ErrorMap>(image->GetSize());
+    image->NormalOperation<int16>(normalMap.get(), [direction, normalMapFactor](Vector3 v, int16* pixel) {
+        *pixel = direction == 0 ? (int16)(normalMapFactor * v.GetX()) : (int16)(normalMapFactor * v.GetY());
+    });
+    return normalMap;
+}
