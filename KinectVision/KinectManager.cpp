@@ -105,21 +105,6 @@ void KinectManager::LoadNextFrame()
     });
 }
 
-void KinectManager::RenderView(CanvasDrawingSession^ drawingSession)
-{
-    // The input
-    ICanvasImage^ img0 = this->canvasBitmap0.GetData();
-    ICanvasImage^ img1 = this->canvasBitmap1.GetData();
-    if (img0 != nullptr)
-    {
-        drawingSession->DrawImage(img0);
-    }
-    if (img1 != nullptr)
-    {
-        drawingSession->DrawImage(img1, 0, 430);
-    }
-}
-
 void KinectManager::OnMultiSourceFrameArrived(MultiSourceFrameReader ^sender, MultiSourceFrameArrivedEventArgs ^args)
 {
     auto multiSourceFrame = sender->AcquireLatestFrame();
@@ -245,8 +230,12 @@ void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
     {
         this->previousFrame = this->currentFrame;
         this->currentFrame = frame;
+        RawFrameUpdated(currentFrame);
         create_task(kinectVision->GetXNormalFrame(frame)).then([this](KinectVisionLib::Frame^ result) {
-            this->canvasBitmap0.SetData(result->GetBitmap(this->canvasResourceCreator));
+            NormalXFrameUpdated(result);
+        });
+        create_task(kinectVision->GetYNormalFrame(frame)).then([this](KinectVisionLib::Frame^ result) {
+            NormalYFrameUpdated(result);
         });
     }
     else
@@ -254,11 +243,13 @@ void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
         create_task(kinectVision->ProcessFrame(frame)).then([this, frame](KinectVisionLib::ProcessStats^ stats){
             this->previousFrame = this->currentFrame;
             this->currentFrame = frame;
-            this->canvasBitmap0.SetData(stats->GetDebugFrame(nullptr)->GetBitmap(this->canvasResourceCreator));
+            RawFrameUpdated(currentFrame);
+
+            ResultFrameUpdated(stats->GetDebugFrame(nullptr));
             auto frame1 = stats->GetDebugFrame(L"BackgroundDiff");
             if (frame1 != nullptr)
             {
-                this->canvasBitmap1.SetData(frame1->GetBitmap(this->canvasResourceCreator));
+                BackgroundFrameUpdated(frame1);
             }
         });
     }
@@ -279,7 +270,7 @@ void KinectManager::ProcessImage(KinectVisionLib::Frame^ currentFrame, KinectVis
     create_task(kinectVision->TransformFrame(this->currentFrame, this->previousFrame, dX, dY, dZ, dA, dB, dR))
         .then([this, iteration, currentFrame, previousFrame](KinectVisionLib::ErrorStats^ result) {
             // TODO: Result should be score and error map
-            this->canvasBitmap1.SetData(result->GetErrorFrame()->GetBitmap(this->canvasResourceCreator));
+            ErrorFrameUpdated(result->GetErrorFrame());
             ErrorStatsUpdated(result);
 
             if (iteration < 10 && result != nullptr /* Check the error score */)

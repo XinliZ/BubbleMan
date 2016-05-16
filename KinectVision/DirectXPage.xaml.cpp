@@ -86,7 +86,7 @@ DirectXPage::DirectXPage():
     m_inputLoopWorker = ThreadPool::RunAsync(workItemHandler, WorkItemPriority::High, WorkItemOptions::TimeSliced);
 
     this->kinectManager = ref new KinectManager();
-    this->kinectManager->Initialize(this->canvas);
+    this->kinectManager->Initialize(this->canvasTop);
     this->kinectManager->ErrorStatsUpdated += ref new KinectVision::ErrorStatsUpdatedEventHandler([this](KinectVisionLib::ErrorStats^ error) {
         this->meanSquareError->Text = error->GetMeanSquareError().ToString();
         this->positiveError->Text = error->GetPositiveError().ToString();
@@ -94,6 +94,10 @@ DirectXPage::DirectXPage():
         this->xOffset->Text = error->GetXOffset().ToString();
         this->yOffset->Text = error->GetYOffset().ToString();
     });
+
+    // Wire up the display window to the frame sources
+    this->kinectManager->NormalYFrameUpdated += ref new KinectVision::FrameUpdatedEventHandler(this, &DirectXPage::UpdateTopFrame);
+    this->kinectManager->NormalXFrameUpdated += ref new KinectVision::FrameUpdatedEventHandler(this, &DirectXPage::UpdateBottomFrame);
 
     m_main = std::unique_ptr<KinectVisionMain>(new KinectVisionMain(m_deviceResources));
     m_main->StartRenderLoop(this->kinectManager);
@@ -208,17 +212,6 @@ void DirectXPage::OnSwapChainPanelSizeChanged(Object^ sender, SizeChangedEventAr
     m_main->CreateWindowSizeDependentResources();
 }
 
-
-void KinectVision::DirectXPage::canvas_Draw(Microsoft::Graphics::Canvas::UI::Xaml::ICanvasAnimatedControl^ sender, Microsoft::Graphics::Canvas::UI::Xaml::CanvasAnimatedDrawEventArgs^ args)
-{
-    args->DrawingSession->DrawEllipse(centerX, centerY, radiusX, radiusY, Windows::UI::Colors::Red);
-    radiusX--;
-    radiusY--;
-
-    kinectManager->RenderView(args->DrawingSession);
-}
-
-
 void KinectVision::DirectXPage::Page_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
     this->centerX = 200;
@@ -226,7 +219,6 @@ void KinectVision::DirectXPage::Page_Loaded(Platform::Object^ sender, Windows::U
     this->radiusX = 200;
     this->radiusY = 300;
 }
-
 
 void KinectVision::DirectXPage::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
@@ -283,4 +275,37 @@ void KinectVision::DirectXPage::ProcessDepthImage_Click(Platform::Object^ sender
         dialog->Commands->Append(ref new Windows::UI::Popups::UICommand("Ok"));
         dialog->ShowAsync();
     }
+}
+
+
+void KinectVision::DirectXPage::canvas_DrawTop(Microsoft::Graphics::Canvas::UI::Xaml::ICanvasAnimatedControl^ sender, Microsoft::Graphics::Canvas::UI::Xaml::CanvasAnimatedDrawEventArgs^ args)
+{
+    args->DrawingSession->DrawEllipse(centerX, centerY, radiusX, radiusY, Windows::UI::Colors::Red);
+    radiusX--;
+    radiusY--;
+
+    Microsoft::Graphics::Canvas::ICanvasImage^ volatile bitmap = this->bitmapTop.GetData();
+    if (bitmap != nullptr)
+    {
+        args->DrawingSession->DrawImage(bitmap);
+    }
+}
+
+
+void KinectVision::DirectXPage::canvas_DrawBottom(Microsoft::Graphics::Canvas::UI::Xaml::ICanvasAnimatedControl^ sender, Microsoft::Graphics::Canvas::UI::Xaml::CanvasAnimatedDrawEventArgs^ args)
+{
+    Microsoft::Graphics::Canvas::ICanvasImage^ volatile bitmap = this->bitmapBottom.GetData();
+    if (bitmap != nullptr)
+    {
+        args->DrawingSession->DrawImage(bitmap);
+    }
+}
+
+void KinectVision::DirectXPage::UpdateTopFrame(KinectVisionLib::Frame^ frame)
+{
+    this->bitmapTop.SetData(frame->GetBitmap(this->canvasTop));
+}
+void KinectVision::DirectXPage::UpdateBottomFrame(KinectVisionLib::Frame^ frame)
+{
+    this->bitmapBottom.SetData(frame->GetBitmap(this->canvasBottom));
 }

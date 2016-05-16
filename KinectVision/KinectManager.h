@@ -1,10 +1,9 @@
 #pragma once
 
-#include "ThreadSafeBox.h"
-
 namespace KinectVision
 {
     public delegate void ErrorStatsUpdatedEventHandler(KinectVisionLib::ErrorStats^ errorStats);
+    public delegate void FrameUpdatedEventHandler(KinectVisionLib::Frame^ frame);
 
     ref class KinectManager sealed
     {
@@ -18,7 +17,6 @@ namespace KinectVision
         void LoadFolder();
         void LoadNextFrame();
 
-        void RenderView(Microsoft::Graphics::Canvas::CanvasDrawingSession^ drawingSession);
         KinectVisionLib::Frame^ GetDepthFrame() { return this->currentFrame; }
         KinectVisionLib::Frame^ GetPreviousDepthFrame() { return this->previousFrame; }
 
@@ -26,13 +24,18 @@ namespace KinectVision
         bool ProcessImage(float dX, float dY, float dZ, float dA, float dB, float dR);
         event ErrorStatsUpdatedEventHandler^ ErrorStatsUpdated;
 
+        event FrameUpdatedEventHandler^ RawFrameUpdated;
+        event FrameUpdatedEventHandler^ ResultFrameUpdated;
+        event FrameUpdatedEventHandler^ ErrorFrameUpdated;
+        event FrameUpdatedEventHandler^ BackgroundFrameUpdated;
+        event FrameUpdatedEventHandler^ NormalXFrameUpdated;
+        event FrameUpdatedEventHandler^ NormalYFrameUpdated;
+
     private:
         WindowsPreview::Kinect::KinectSensor^ kinectSensor;
         WindowsPreview::Kinect::MultiSourceFrameReader^ multiSourceFrameReader;
 
         Microsoft::Graphics::Canvas::ICanvasResourceCreator^ canvasResourceCreator;
-        ThreadSafeBox<Microsoft::Graphics::Canvas::CanvasBitmap^> canvasBitmap0;
-        ThreadSafeBox<Microsoft::Graphics::Canvas::CanvasBitmap^> canvasBitmap1;
         KinectVisionLib::Frame^ currentFrame;
         KinectVisionLib::Frame^ previousFrame;
 

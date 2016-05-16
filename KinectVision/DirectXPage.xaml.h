@@ -10,6 +10,7 @@
 #include "Common\DeviceResources.h"
 #include "KinectVisionMain.h"
 #include "KinectManager.h"
+#include "ThreadSafeBox.h"
 
 namespace KinectVision
 {
@@ -55,7 +56,6 @@ namespace KinectVision
         std::shared_ptr<DX::DeviceResources> m_deviceResources;
         std::unique_ptr<KinectVisionMain> m_main; 
         bool m_windowVisible;
-        void canvas_Draw(Microsoft::Graphics::Canvas::UI::Xaml::ICanvasAnimatedControl^ sender, Microsoft::Graphics::Canvas::UI::Xaml::CanvasAnimatedDrawEventArgs^ args);
 
         float centerX;
         float centerY;
@@ -72,6 +72,14 @@ namespace KinectVision
         void CheckBox_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
         void Button_Click_2(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
         void ProcessDepthImage_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
+
+        // Canvas rendering
+        void canvas_DrawTop(Microsoft::Graphics::Canvas::UI::Xaml::ICanvasAnimatedControl^ sender, Microsoft::Graphics::Canvas::UI::Xaml::CanvasAnimatedDrawEventArgs^ args);
+        void canvas_DrawBottom(Microsoft::Graphics::Canvas::UI::Xaml::ICanvasAnimatedControl^ sender, Microsoft::Graphics::Canvas::UI::Xaml::CanvasAnimatedDrawEventArgs^ args);
+        void UpdateTopFrame(KinectVisionLib::Frame^ frame);
+        void UpdateBottomFrame(KinectVisionLib::Frame^ frame);
+        ThreadSafeBox<Microsoft::Graphics::Canvas::ICanvasImage^> bitmapTop;
+        ThreadSafeBox<Microsoft::Graphics::Canvas::ICanvasImage^> bitmapBottom;
     };
 }
 
