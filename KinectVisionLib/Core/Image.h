@@ -93,6 +93,18 @@ namespace KinectVisionLib{
                 return true;
             }
 
+            virtual const std::wstring ReadPixelValue(int x, int y, int width, int height) const override
+            {
+                float sum = 0;
+                float count = 0;
+                ImageOperation(Rect(x, y, width, height), [&sum, &count](int x, int y, T pixel) {
+                    sum += pixel;
+                    count++;
+                });
+                float result = count > 0 ? sum / count : 0;
+                return std::to_wstring(result);
+            }
+
         public:
             void SetPixel(const Point& point, T pixel) {
                 *(GetScan0() + point.GetY() * GetStride() + point.GetX()) = pixel;
@@ -209,6 +221,19 @@ namespace KinectVisionLib{
                 {
                     const T* img = this->GetScan0() + i * this->GetStride();
                     for (int j = 0; j < GetWidth(); j++)
+                    {
+                        operation(j, i, *img);
+                        img++;
+                    }
+                }
+            }
+
+            void ImageOperation(const Rect& rect, function<void(int x, int y, T pixel)> operation) const
+            {
+                for (int i = rect.GetTop(); i < rect.GetBottom(); i++)
+                {
+                    const T* img = GetLine(i) + rect.GetLeft();
+                    for (int j = rect.GetLeft(); j < rect.GetRight(); j++)
                     {
                         operation(j, i, *img);
                         img++;

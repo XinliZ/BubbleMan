@@ -12,5 +12,6 @@
 #include <deque>
 
 #include <math.h>
+#include <string>
 
 using namespace std;

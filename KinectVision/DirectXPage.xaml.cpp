@@ -26,7 +26,9 @@ using namespace concurrency;
 
 DirectXPage::DirectXPage():
     m_windowVisible(true),
-    m_coreInput(nullptr)
+    m_coreInput(nullptr),
+    pointerDownX(-1.0f),
+    pointerDownY(-1.0f)
 {
     InitializeComponent();
 
@@ -303,9 +305,101 @@ void KinectVision::DirectXPage::canvas_DrawBottom(Microsoft::Graphics::Canvas::U
 
 void KinectVision::DirectXPage::UpdateTopFrame(KinectVisionLib::Frame^ frame)
 {
+    this->frameTop = frame;
     this->bitmapTop.SetData(frame->GetBitmap(this->canvasTop));
 }
 void KinectVision::DirectXPage::UpdateBottomFrame(KinectVisionLib::Frame^ frame)
 {
+    this->frameBottom = frame;
     this->bitmapBottom.SetData(frame->GetBitmap(this->canvasBottom));
+}
+
+
+void KinectVision::DirectXPage::Grid_PointerMoved(Platform::Object^ sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs^ e)
+{
+    Grid^ grid = (Grid^)sender;
+    auto position = e->GetCurrentPoint(grid)->Position;
+    auto targetFrame = Platform::String::CompareOrdinal(grid->Name, L"gridTop") == 0 ? this->frameTop : this->frameBottom;
+    if (targetFrame == nullptr)
+    {
+        return;
+    }
+
+    if (this->pointerDownX == -1.0f)
+    {
+        this->mouseXLocation->Text = position.X.ToString();
+        this->mouseYLocation->Text = position.Y.ToString();
+        
+        this->readValue->Text = targetFrame->ReadPixelValue((int)position.X, (int)position.Y, 1, 1);
+    }
+    else
+    {
+        auto x = this->pointerDownX;
+        auto y = this->pointerDownY;
+        auto w = position.X - this->pointerDownX;
+        auto h = position.Y - this->pointerDownY;
+        if (w < 0)
+        {
+            x = x + w;
+            w = -w;
+        }
+        if (h < 0)
+        {
+            y = y + h;
+            h = -h;
+        }
+        this->mouseXLocation->Text = x.ToString();
+        this->mouseYLocation->Text = y.ToString();
+        this->mouseWidth->Text = w.ToString();
+        this->mouseHeight->Text = h.ToString();
+        this->readValue->Text = targetFrame->ReadPixelValue((int)x, (int)y, (int)w, (int)h);
+
+        this->rectangleOnImage->Width = w;
+        this->rectangleOnImage->Height = h;
+        this->rectangleOnImage->Margin = Thickness(x, y, 0, 0);
+    }
+}
+
+
+void KinectVision::DirectXPage::Grid_PointerPressed(Platform::Object^ sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs^ e)
+{
+    auto position = e->GetCurrentPoint((UIElement^)sender)->Position;
+    this->pointerDownX = position.X;
+    this->pointerDownY = position.Y;
+
+    if (this->rectangleOnImage->Parent != sender)
+    {
+        ((Grid^)this->rectangleOnImage->Parent)->Children->RemoveAt(1);
+        ((Grid^)sender)->Children->Append(this->rectangleOnImage);
+    }
+    this->rectangleOnImage->Visibility = Windows::UI::Xaml::Visibility::Visible;
+}
+
+
+void KinectVision::DirectXPage::Grid_PointerReleased(Platform::Object^ sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs^ e)
+{
+    this->pointerDownX = -1.0f;
+    this->pointerDownY = -1.0f;
+    this->mouseWidth->Text = L"";
+    this->mouseHeight->Text = L"";
+
+    this->rectangleOnImage->Width = 0;
+    this->rectangleOnImage->Height = 0;
+    this->rectangleOnImage->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+}
+
+
+void KinectVision::DirectXPage::gridTop_PointerExited(Platform::Object^ sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs^ e)
+{
+    this->pointerDownX = -1.0f;
+    this->pointerDownY = -1.0f;
+    this->mouseXLocation->Text = L"";
+    this->mouseYLocation->Text = L"";
+    this->mouseWidth->Text = L"";
+    this->mouseHeight->Text = L"";
+    this->readValue->Text = L"";
+
+    this->rectangleOnImage->Width = 0;
+    this->rectangleOnImage->Height = 0;
+    this->rectangleOnImage->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
 }

@@ -27,6 +27,11 @@ namespace KinectVisionLib
             virtual void RenderAsRGBA(uint8* buffer) const override {
                 // Do nothing here
             }
+
+            virtual const wstring ReadPixelValue(int x, int y, int width, int height) const override
+            {
+                return L"no support";
+            }
         };
     }
 }

@@ -18,7 +18,6 @@ namespace KinectVisionLib
                 NormalizeMidDataToBuffer(buffer);
             }
 
-
             void NormalizeMidDataToBuffer(uint8* bitmapBuffer) const
             {
                 int index = 0;

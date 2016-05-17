@@ -47,6 +47,7 @@ namespace KinectVisionLib
                 });
             }
 
+
         public:
             float GetMeanSquareError() const { return this->meanSquareError; }
             float GetPositiveError() const { return this->positiveError; }

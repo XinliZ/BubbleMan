@@ -80,6 +80,16 @@ namespace KinectVision
         void UpdateBottomFrame(KinectVisionLib::Frame^ frame);
         ThreadSafeBox<Microsoft::Graphics::Canvas::ICanvasImage^> bitmapTop;
         ThreadSafeBox<Microsoft::Graphics::Canvas::ICanvasImage^> bitmapBottom;
+        KinectVisionLib::Frame^ frameTop;
+        KinectVisionLib::Frame^ frameBottom;
+
+        // Image UI manipulation
+        void Grid_PointerMoved(Platform::Object^ sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs^ e);
+        void Grid_PointerPressed(Platform::Object^ sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs^ e);
+        void Grid_PointerReleased(Platform::Object^ sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs^ e);
+        void gridTop_PointerExited(Platform::Object^ sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs^ e);
+        float pointerDownX;
+        float pointerDownY;
     };
 }
 

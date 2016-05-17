@@ -22,6 +22,11 @@ namespace KinectVisionLib
                 // Do nothing, we don't need this for now
             }
 
+            virtual const wstring ReadPixelValue(int x, int y, int width, int height) const override
+            {
+                return L"no support";
+            }
+
             bool IsPixelValid(Point point)
             {
                 return GetBoundingBox().Contains(point) ? GetPixel(point.Offset(GetBoundingBox().GetOffset())) : false;

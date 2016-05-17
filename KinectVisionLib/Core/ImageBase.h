@@ -20,6 +20,7 @@ namespace KinectVisionLib {
             Point GetCenter() const { return Point(width / 2, height / 2); }
 
             virtual void RenderAsRGBA(uint8* buffer) const = 0;
+            virtual const wstring ReadPixelValue(int x, int y, int width, int height) const = 0;
 
         protected:
             bool IsValid(Point point) const {

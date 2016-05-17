@@ -25,6 +25,16 @@ namespace KinectVisionLib
         //property int Length {int get(){ return image->GetLength(); }}
         property int LengthInPixel {int get(){ return image->GetWidth() * image->GetHeight(); }}
 
+        Platform::String^ ReadPixelValue(int x, int y, int width, int height)
+        {
+            if (x > 0 && x < image->GetWidth() && y > 0 && y < image->GetHeight() &&
+                x + width < image->GetWidth() && y + height < image->GetHeight())
+            {
+                return ref new Platform::String(image->ReadPixelValue(x, y, width, height).c_str());
+            }
+            return L"";
+        }
+
     private:
         Microsoft::Graphics::Canvas::CanvasBitmap^ CreateBitmapFromBuffer(Microsoft::Graphics::Canvas::ICanvasResourceCreator^ canvas, std::shared_ptr<const KinectVisionLib::Core::ImageBase> image);
 
