@@ -174,6 +174,63 @@ namespace KinectVisionLib{
             }
 
             template<typename T1>
+            void AngleOperation(Image<T1>* normalMap, function<void(Vector3, T1*)> operation) const
+            {
+                for (int i = 0; i < GetHeight() - 1; i++)
+                {
+                    const T* img = GetLine(i);
+                    const T* imgNext = GetLine(i + 1);
+                    T1* target = normalMap->GetLine(i);
+                    for (int j = 0; j < GetWidth() - 1; j++)
+                    {
+                        float p0 = (float)*img;
+                        float p1 = (float)*(img + 1);
+                        float p2 = (float)*imgNext;
+                        if (p0 > 0 && p1 > 0 && p2 > 0)
+                        {
+                            Vector3 normal = Vector3(atan2(p0 - p1, p0 / GlobalConsts::KinectD0), atan2(p0 - p2, p0 / GlobalConsts::KinectD0), 0);
+                            operation(normal, target);
+                        }
+
+                        img++;
+                        imgNext++;
+                        target++;
+                    }
+                }
+            }
+
+            template<typename T1>
+            void AngleOperation(const Image<int16>* errorMap, Image<T1>* normalMap, function<void(Vector3, int16 error, T1*)> operation) const
+            {
+                for (int i = 0; i < GetHeight() - 1; i++)
+                {
+                    const T* img = GetLine(i);
+                    const T* imgNext = GetLine(i + 1);
+                    const int16* errorScan = errorMap->GetLine(i);
+                    T1* target = normalMap->GetLine(i);
+                    for (int j = 0; j < GetWidth() - 1; j++)
+                    {
+                        float p0 = (float)*img;
+                        float p1 = (float)*(img + 1);
+                        float p2 = (float)*imgNext;
+                        if (p0 > 0 && p1 > 0 && p2 > 0)
+                        {
+                            Vector3 v1 = Vector3(p0 / GlobalConsts::KinectD0, 0.0f, p0 - p1);
+                            Vector3 v2 = Vector3(0.0f, p0 / GlobalConsts::KinectD0, p0 - p2);
+                            //Vector3 normal = (v1 ^ v2).Normalize();       // TODO: Left hand?
+                            Vector3 normal = Vector3(atan2(p0 - p1, p0 / GlobalConsts::KinectD0), atan2(p0 - p2, p0 / GlobalConsts::KinectD0), 0);
+                            operation(normal, *errorScan, target);
+                        }
+
+                        img++;
+                        imgNext++;
+                        target++;
+                        errorScan++;
+                    }
+                }
+            }
+
+            template<typename T1>
             void NormalOperation(const Image<T1>* errorMap, function<void(Vector3, T)> operation) const
             {
                 for (int i = 0; i < GetHeight() - 1; i++)

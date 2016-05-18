@@ -3,7 +3,7 @@
 
 using namespace KinectVisionLib::Core;
 
-const float GlobalConsts::KinectD0 = 500.0f;
+const float GlobalConsts::KinectD0 = 400.0f;
 
 KinectVisionManager::KinectVisionManager()
 {
@@ -93,8 +93,8 @@ shared_ptr<const ErrorMap> KinectVisionManager::CreateNormalMap(shared_ptr<const
 {
     const int normalMapFactor = 127;
     shared_ptr<ErrorMap> normalMap = make_shared<ErrorMap>(image->GetSize());
-    image->NormalOperation<int16>(normalMap.get(), [direction, normalMapFactor](Vector3 v, int16* pixel) {
-        *pixel = direction == 0 ? (int16)(normalMapFactor * v.GetX()) : (int16)(normalMapFactor * v.GetY());
+    image->AngleOperation<int16>(normalMap.get(), [direction, normalMapFactor](Vector3 v, int16* pixel) {
+        *pixel = direction == 0 ? (int16)(v.GetX() * 180 / PI) : (int16)(v.GetY() * 180 / PI);
     });
     return normalMap;
 }

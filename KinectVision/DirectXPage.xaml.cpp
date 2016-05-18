@@ -98,8 +98,8 @@ DirectXPage::DirectXPage():
     });
 
     // Wire up the display window to the frame sources
-    this->kinectManager->NormalYFrameUpdated += ref new KinectVision::FrameUpdatedEventHandler(this, &DirectXPage::UpdateTopFrame);
-    this->kinectManager->NormalXFrameUpdated += ref new KinectVision::FrameUpdatedEventHandler(this, &DirectXPage::UpdateBottomFrame);
+    this->kinectManager->RawFrameUpdated += ref new KinectVision::FrameUpdatedEventHandler(this, &DirectXPage::UpdateTopFrame);
+    this->kinectManager->ErrorFrameUpdated += ref new KinectVision::FrameUpdatedEventHandler(this, &DirectXPage::UpdateBottomFrame);
 
     m_main = std::unique_ptr<KinectVisionMain>(new KinectVisionMain(m_deviceResources));
     m_main->StartRenderLoop(this->kinectManager);
