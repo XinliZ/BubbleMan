@@ -225,7 +225,7 @@ KinectVisionLib::Frame^ KinectManager::BuildFrameFromDepthFrame(DepthFrame^ dept
 
 void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
 {
-    bool DoNotProcessForDebugging = false;
+    bool DoNotProcessForDebugging = true;
     if (DoNotProcessForDebugging)
     {
         this->previousFrame = this->currentFrame;

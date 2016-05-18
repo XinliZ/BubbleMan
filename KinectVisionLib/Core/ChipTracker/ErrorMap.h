@@ -7,6 +7,8 @@ namespace KinectVisionLib
 {
     namespace Core
     {
+        using namespace std;
+
         class ErrorMap : public Image<int16>
         {
         public:
@@ -47,7 +49,20 @@ namespace KinectVisionLib
                 });
             }
 
-
+            virtual const std::wstring ReadPixelValue(int x, int y, int width, int height) const override
+            {
+                float sum = 0;
+                float count = 0;
+                ImageOperation(Rect(x, y, width, height), [&sum, &count, this](int x, int y, int16 pixel) {
+                    if (pixel != invalidBits)
+                    {
+                        sum += pixel;
+                        count++;
+                    }
+                });
+                float result = count > 0 ? sum / count : 0;
+                return std::to_wstring(result);
+            }
         public:
             float GetMeanSquareError() const { return this->meanSquareError; }
             float GetPositiveError() const { return this->positiveError; }
@@ -59,7 +74,7 @@ namespace KinectVisionLib
             {
                 MeasureErrors(this->meanSquareError, this->positiveError, this->negativeError);
 
-                PredictXYOffset(img, this->xOffset, this->yOffset);
+                PredictXYOffset1(img, this->xOffset, this->yOffset);
             }
 
         private:
@@ -109,6 +124,65 @@ namespace KinectVisionLib
                 });
                 xOffset = totalXOffset / count;
                 yOffset = totalYOffset / count;
+            }
+
+            void PredictXYOffset1(const DepthImage* img, float& xOffset, float& yOffset)
+            {
+                vector<pair<float, float>> results;
+                img->AngleOperation(this, [&results, this](const Vector3& angles, int16 error) {
+                    if (error != invalidBits)
+                    {
+                        // TODO: Dealing the x direction only for now
+                        float a = tan(angles.GetX());
+                        float b = error;
+                        if (a != 0)
+                        {
+                            results.push_back(pair<float, float>(b / a, 0.0f));
+                        }
+                    }
+                });
+
+                //vector<Point> intersections;
+                //for (int i = 0; i < results.size() - 1; i += 100)
+                //{
+                //    for (int j = i + 1; j < results.size(); j += 100)
+                //    {
+                //        Point point(0, 0);
+                //        if (Intersection(results[i].first, results[i].second, results[j].first, results[j].second, point))
+                //        {
+                //            intersections.push_back(point);
+                //        }
+                //    }
+                //}
+
+                //float totalX = 0;
+                //float totalY = 0;
+                //for (Point p : intersections)
+                //{
+                //    totalX += p.GetX();
+                //    totalY += p.GetY();
+                //}
+
+                //xOffset = totalX / intersections.size();
+                //yOffset = totalY / intersections.size();
+                float total = 0;
+                for (auto p : results)
+                {
+                    total += p.first;
+                }
+                xOffset = total / results.size();
+                yOffset = 123.0f;
+            }
+
+            bool Intersection(float A1, float B1, float A2, float B2, Point& point) const
+            {
+                if (A1 == A2)
+                {
+                    return false;
+                }
+                float x = (B2 - B1) / (A1 - A2);
+                point = Point(x, x * A1 + B1);      // TODO: Should we use float here?
+                return true;
             }
 
         public:
