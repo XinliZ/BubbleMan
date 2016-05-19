@@ -69,12 +69,27 @@ namespace KinectVisionLib
             float GetNegativeError() const { return this->negativeError; }
             float GetXOffset() const { return this->xOffset; }
             float GetYOffset() const { return this->yOffset; }
+            float GetDX() const { return this->DX; }
+            float GetDY() const { return this->DY; }
+            float GetDZ() const { return this->DZ; }
+            float GetDA() const { return this->DA; }
+            float GetDB() const { return this->DB; }
+            float GetDR() const { return this->DR; }
 
-            void AnalyzeResults(const DepthImage* img)
+            void AnalyzeResults(const DepthImage* img, float dX, float dY, float dZ, float dA, float dB, float dR)
             {
+                this->DX = dX;
+                this->DY = dY;
+                this->DZ = dZ;
+                this->DA = dA;
+                this->DB = dB;
+                this->DR = dR;
+
                 MeasureErrors(this->meanSquareError, this->positiveError, this->negativeError);
 
                 PredictXYOffset1(img, this->xOffset, this->yOffset);
+
+                this->DX += this->xOffset * -100;
             }
 
         private:
@@ -214,6 +229,13 @@ namespace KinectVisionLib
 
             float xOffset;
             float yOffset;
+
+            float DX;
+            float DY;
+            float DZ;
+            float DA;
+            float DB;
+            float DR;
         };
     }
 }

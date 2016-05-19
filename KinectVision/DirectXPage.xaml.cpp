@@ -95,6 +95,12 @@ DirectXPage::DirectXPage():
         this->negativeError->Text = error->GetNegativeError().ToString();
         this->xOffset->Text = error->GetXOffset().ToString();
         this->yOffset->Text = error->GetYOffset().ToString();
+        this->dX->Text = error->GetDX().ToString();
+        this->dY->Text = error->GetDY().ToString();
+        this->dZ->Text = error->GetDZ().ToString();
+        this->dA->Text = error->GetDA().ToString();
+        this->dB->Text = error->GetDB().ToString();
+        this->dR->Text = error->GetDR().ToString();
     });
 
     // Wire up the display window to the frame sources
@@ -402,4 +408,15 @@ void KinectVision::DirectXPage::gridTop_PointerExited(Platform::Object^ sender, 
     this->rectangleOnImage->Width = 0;
     this->rectangleOnImage->Height = 0;
     this->rectangleOnImage->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+}
+
+
+void KinectVision::DirectXPage::Clear_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+    this->dX->Text = L"0";
+    this->dY->Text = L"0";
+    this->dZ->Text = L"0";
+    this->dA->Text = L"0";
+    this->dB->Text = L"0";
+    this->dR->Text = L"0";
 }

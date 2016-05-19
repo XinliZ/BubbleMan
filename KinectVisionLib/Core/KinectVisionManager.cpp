@@ -35,18 +35,9 @@ shared_ptr<const ErrorMap> KinectVisionManager::TransformFrame(shared_ptr<const 
     float dX, float dY, float dZ, float dA, float dB, float dR) const
 {
     auto errorMap = MatchImages(image.get(), previousImage.get(), dX, dY, dZ, dA, dB, dR);
-    errorMap->AnalyzeResults(image.get());
-
-    UpdateParametersOnErrorMap(errorMap.get(), dX, dY, dZ, dA, dB, dR);
-
+    errorMap->AnalyzeResults(image.get(), dX, dY, dZ, dA, dB, dR);
 
     return errorMap;
-}
-
-void KinectVisionManager::UpdateParametersOnErrorMap(ErrorMap* errorMap, float dX, float dY, float dZ, float dA, float dB, float dR) const
-{
-//    MeasureAverage(errorMap);
-//    Measure
 }
 
 shared_ptr<ErrorMap> KinectVisionManager::MatchImages(const DepthImage* image, const DepthImage* previousImage, float dX, float dY, float dZ, float dA, float dB, float dR) const
