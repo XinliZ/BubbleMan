@@ -22,62 +22,66 @@
                 <Button Margin="100,0,0,0" Click="Button_Click_2">Tools</Button>
             </StackPanel>
             <StackPanel x:Name="ToolsPanel" Height="0" Orientation="Horizontal" Margin="5,0">
-                <StackPanel>
+                <StackPanel Margin="0,0,5,0">
                     <StackPanel Orientation="Horizontal">
-                        <TextBox x:Name="dX" Width="30" Margin="5" Text="0"></TextBox>
-                        <TextBox x:Name="dY" Width="30" Margin="5" Text="0"></TextBox>
-                        <TextBox x:Name="dZ" Width="30" Margin="5" Text="0"></TextBox>
+                        <TextBox x:Name="dX" Width="30" Margin="1" Text="0"></TextBox>
+                        <TextBox x:Name="dY" Width="30" Margin="1" Text="0"></TextBox>
+                        <TextBox x:Name="dZ" Width="30" Margin="1" Text="0"></TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBox x:Name="dA" Width="30" Margin="5" Text="0"></TextBox>
-                        <TextBox x:Name="dB" Width="30" Margin="5" Text="0"></TextBox>
-                        <TextBox x:Name="dR" Width="30" Margin="5" Text="0"></TextBox>
+                        <TextBox x:Name="dA" Width="30" Margin="1" Text="0"></TextBox>
+                        <TextBox x:Name="dB" Width="30" Margin="1" Text="0"></TextBox>
+                        <TextBox x:Name="dR" Width="30" Margin="1" Text="0"></TextBox>
                     </StackPanel>
                 </StackPanel>
-                <Button x:Name="ProcessDepthImage" Click="ProcessDepthImage_Click">Process</Button>
+                <StackPanel>
+                    <Button x:Name="ProcessDepthImage" Click="ProcessDepthImage_Click">Process</Button>
+                    <Button x:Name="Clear" Click="Clear_Click" FontSize="10" Height="30">Clear</Button>
+                </StackPanel>
                 <StackPanel Margin="15,0,0,0" MinWidth="180">
-                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <StackPanel Orientation="Horizontal" Margin="0,3">
                         <TextBlock FontSize="14" Margin="0,0,5,0">Mean Square Error:</TextBlock>
                         <TextBlock x:Name="meanSquareError" FontSize="14"></TextBlock>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <StackPanel Orientation="Horizontal" Margin="0,3">
                         <TextBlock FontSize="14" Margin="0,0,5,0">PositiveError:</TextBlock>
                         <TextBlock x:Name="positiveError" FontSize="14"></TextBlock>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <StackPanel Orientation="Horizontal" Margin="0,3">
                         <TextBlock FontSize="14" Margin="0,0,5,0">NegativeError:</TextBlock>
                         <TextBlock x:Name="negativeError" FontSize="14"></TextBlock>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                <StackPanel MinWidth="40">
+                    <StackPanel Orientation="Horizontal" Margin="0,3">
                         <TextBlock FontSize="14" Margin="0,0,5,0">x: </TextBlock>
                         <TextBlock x:Name="xOffset" FontSize="14"></TextBlock>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <StackPanel Orientation="Horizontal" Margin="0,3">
                         <TextBlock FontSize="14" Margin="0,0,5,0">y: </TextBlock>
                         <TextBlock x:Name="yOffset" FontSize="14"></TextBlock>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel Margin="200,0,0,0">
+                <Line Margin="5,0,5,0" Width="1" Y1="5" Y2="64" Stroke="#FFA09E9E"/>
+                <StackPanel>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <StackPanel MinWidth="70">
-                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                <StackPanel Orientation="Horizontal" Margin="0,3">
                                     <TextBlock FontSize="14" Margin="0,0,5,0">x:</TextBlock>
                                     <TextBlock x:Name="mouseXLocation" FontSize="14"></TextBlock>
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                <StackPanel Orientation="Horizontal" Margin="0,3">
                                     <TextBlock FontSize="14" Margin="0,0,5,0">y:</TextBlock>
                                     <TextBlock x:Name="mouseYLocation" FontSize="14"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel MinWidth="70">
-                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                <StackPanel Orientation="Horizontal" Margin="0,3">
                                     <TextBlock FontSize="14" Margin="0,0,5,0">w:</TextBlock>
                                     <TextBlock x:Name="mouseWidth" FontSize="14"></TextBlock>
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                <StackPanel Orientation="Horizontal" Margin="0,3">
                                     <TextBlock FontSize="14" Margin="0,0,5,0">h:</TextBlock>
                                     <TextBlock x:Name="mouseHeight" FontSize="14"></TextBlock>
                                 </StackPanel>
@@ -89,7 +93,7 @@
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
-                
+                <Line Margin="5,0,5,0" Width="1" Y1="5" Y2="64" Stroke="#FFA09E9E"/>
             </StackPanel>
         </StackPanel>
         <Grid Grid.Row="1">

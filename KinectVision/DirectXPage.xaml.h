@@ -90,6 +90,7 @@ namespace KinectVision
         void gridTop_PointerExited(Platform::Object^ sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs^ e);
         float pointerDownX;
         float pointerDownY;
+        void Clear_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
     };
 }
 

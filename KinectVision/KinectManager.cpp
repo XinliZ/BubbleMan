@@ -244,6 +244,12 @@ void KinectManager::ProcessFrame(KinectVisionLib::Frame^ frame)
             this->previousFrame = this->currentFrame;
             this->currentFrame = frame;
             RawFrameUpdated(currentFrame);
+            create_task(kinectVision->GetXNormalFrame(frame)).then([this](KinectVisionLib::Frame^ result) {
+                NormalXFrameUpdated(result);
+            });
+            create_task(kinectVision->GetYNormalFrame(frame)).then([this](KinectVisionLib::Frame^ result) {
+                NormalYFrameUpdated(result);
+            });
 
             ResultFrameUpdated(stats->GetDebugFrame(nullptr));
             auto frame1 = stats->GetDebugFrame(L"BackgroundDiff");

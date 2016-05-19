@@ -3,7 +3,7 @@
 
 using namespace KinectVisionLib::Core;
 
-const float GlobalConsts::KinectD0 = 500.0f;
+const float GlobalConsts::KinectD0 = 400.0f;
 
 KinectVisionManager::KinectVisionManager()
 {
@@ -31,20 +31,13 @@ void KinectVisionManager::UpdateBlackDotsMask(shared_ptr<DepthImage> image, shar
     }
 }
 
-shared_ptr<const ErrorMap> KinectVisionManager::TransformFrame(shared_ptr<const DepthImage> image, shared_ptr<const DepthImage> previousImage, float dX, float dY, float dZ, float dA, float dB, float dR) const
+shared_ptr<const ErrorMap> KinectVisionManager::TransformFrame(shared_ptr<const DepthImage> image, shared_ptr<const DepthImage> previousImage, 
+    float dX, float dY, float dZ, float dA, float dB, float dR) const
 {
     auto errorMap = MatchImages(image.get(), previousImage.get(), dX, dY, dZ, dA, dB, dR);
-    errorMap->AnalyzeResults(image.get());
-
-    UpdateParametersOnErrorMap(errorMap.get(), dX, dY, dZ, dA, dB, dR);
+    errorMap->AnalyzeResults(image.get(), dX, dY, dZ, dA, dB, dR);
 
     return errorMap;
-}
-
-void KinectVisionManager::UpdateParametersOnErrorMap(ErrorMap* errorMap, float dX, float dY, float dZ, float dA, float dB, float dR) const
-{
-//    MeasureAverage(errorMap);
-//    Measure
 }
 
 shared_ptr<ErrorMap> KinectVisionManager::MatchImages(const DepthImage* image, const DepthImage* previousImage, float dX, float dY, float dZ, float dA, float dB, float dR) const
@@ -91,10 +84,9 @@ shared_ptr<ErrorMap> KinectVisionManager::MatchImages(const DepthImage* image, c
 
 shared_ptr<const ErrorMap> KinectVisionManager::CreateNormalMap(shared_ptr<const DepthImage> image, int direction)
 {
-    const int normalMapFactor = 127;
     shared_ptr<ErrorMap> normalMap = make_shared<ErrorMap>(image->GetSize());
-    image->NormalOperation<int16>(normalMap.get(), [direction, normalMapFactor](Vector3 v, int16* pixel) {
-        *pixel = direction == 0 ? (int16)(normalMapFactor * v.GetX()) : (int16)(normalMapFactor * v.GetY());
+    image->AngleOperation<int16>(normalMap.get(), [direction](const Vector3& v) {
+        return direction == 0 ? (int16)(v.GetX() * 180.0f / PI) : (int16)(v.GetY() * 180.0f / PI);
     });
     return normalMap;
 }
